@@ -1,5 +1,6 @@
 {
   "name": "aa-wedding-site",
+  "version": "0.1.0",
   "private": true,
   "scripts": {
     "dev": "next dev",
@@ -7,12 +8,13 @@
     "start": "next start",
     "lint": "next lint",
     "pages:build": "npx @cloudflare/next-on-pages",
-    "pages:preview": "npm run pages:build && wrangler pages dev .vercel/output/static"
+    "pages:preview": "npm run pages:build && wrangler pages dev .vercel/output/static",
+    "pages:deploy": "wrangler pages deploy"
   },
   "dependencies": {
     "@neondatabase/serverless": "^0.10.4",
     "leaflet": "^1.9.4",
-    "next": "14.2.5",
+    "next": "15.5.7",
     "qrcode": "^1.5.3",
     "react": "^18.3.1",
     "react-dom": "^18.3.1"
@@ -26,5 +28,10 @@
     "@types/react-dom": "^18.3.0",
     "typescript": "^5.5.3",
     "wrangler": "^3"
+  },
+  "overrides": {
+    "@cloudflare/next-on-pages": {
+      "next": "$next"
+    }
   }
 }
