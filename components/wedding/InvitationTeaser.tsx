@@ -1,0 +1,129 @@
+'use client';
+
+import { useEffect, useRef } from 'react';
+import { css } from '@/lib/css';
+import Reveal from '@/components/Reveal';
+
+export default function InvitationTeaser() {
+  const qrRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    let cancelled = false;
+    (async () => {
+      const QRCode = (await import('qrcode')).default;
+      const url = new URL('/invitation', window.location.origin).href;
+      const dataUrl = await QRCode.toDataURL(url, {
+        width: 108,
+        margin: 1,
+        color: { dark: '#1f1c18', light: '#faf7f1' }
+      });
+      if (cancelled || !qrRef.current) return;
+      qrRef.current.innerHTML = '';
+      const img = document.createElement('img');
+      img.src = dataUrl;
+      img.width = 108;
+      img.height = 108;
+      img.alt = 'QR code linking to the digital invitation';
+      qrRef.current.appendChild(img);
+    })();
+    return () => {
+      cancelled = true;
+    };
+  }, []);
+
+  return (
+    <section id="invitation" style={css('scroll-margin-top:104px;padding:clamp(76px,12vw,150px) clamp(20px,5vw,72px);background:#efe8dd')}>
+      <div style={css('max-width:1160px;margin:0 auto;display:flex;flex-direction:column;gap:clamp(36px,5vw,60px)')}>
+        <Reveal style={css('display:flex;flex-direction:column;gap:16px;max-width:42ch')}>
+          <p style={css("margin:0;font:500 10px/1 'Jost',sans-serif;letter-spacing:.36em;text-transform:uppercase;color:#9a6f4c")}>
+            The invitation
+          </p>
+          <h2 style={css("margin:0;font:300 clamp(36px,6.5vw,72px)/1.02 'Cormorant Garamond',serif;letter-spacing:-.015em")}>
+            Officially, and in writing.
+          </h2>
+        </Reveal>
+
+        <div style={css('display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,300px),1fr));gap:clamp(28px,4vw,56px);align-items:center')}>
+          <Reveal
+            style={css(
+              'position:relative;background:#faf7f1;box-shadow:0 40px 80px -50px rgba(31,28,24,.5);padding:clamp(30px,5vw,54px) clamp(22px,4vw,44px)'
+            )}
+          >
+            <div style={css('position:absolute;inset:14px;border:1px solid rgba(154,111,76,.32);pointer-events:none')} />
+            <div style={css('position:relative;display:flex;flex-direction:column;align-items:center;text-align:center;gap:18px')}>
+              <div
+                style={css(
+                  "width:46px;height:46px;border:1px solid rgba(154,111,76,.5);border-radius:50%;display:flex;align-items:center;justify-content:center;font:400 16px/1 'Cormorant Garamond',serif;color:#9a6f4c"
+                )}
+              >
+                A&nbsp;A
+              </div>
+              <p style={css("margin:0;font:500 9.5px/1 'Jost',sans-serif;letter-spacing:.32em;text-transform:uppercase;color:#9a6f4c")}>
+                Together with our families
+              </p>
+              <h3 style={css("margin:0;font:300 clamp(30px,5.6vw,50px)/1.05 'Cormorant Garamond',serif")}>
+                Aishat <span style={css('font-style:italic;color:#9a6f4c')}>&amp;</span> Abdul
+              </h3>
+              <div style={css('width:44px;height:1px;background:rgba(154,111,76,.45)')} />
+              <p style={css("margin:0;font:300 14px/1.8 'Jost',sans-serif;color:#6b6259")}>
+                Saturday 21 November 2026 · 2:00 pm
+                <br />
+                Aso Rock Banquet Hall
+                <br />
+                Asokoro District, Abuja
+              </p>
+              <p style={css("margin:0;font:300 12.5px/1.7 'Jost',sans-serif;color:#a89d8f")}>
+                Formal / cocktail · Kindly reply by 24 October
+              </p>
+            </div>
+          </Reveal>
+
+          <Reveal style={css('display:flex;flex-direction:column;gap:26px')}>
+            <p style={css("margin:0;font:300 clamp(15px,1.7vw,17px)/1.85 'Jost',sans-serif;color:#6b6259;text-wrap:pretty")}>
+              The full invitation — with venue, timings, attire, travel and reply details — opens as its own page, ready
+              to save or print. Scan the code to open it on another device.
+            </p>
+            <div style={css('display:flex;flex-wrap:wrap;gap:14px;align-items:center')}>
+              <a
+                href="/invitation?print=1"
+                target="_blank"
+                rel="noopener"
+                style={css(
+                  "padding:17px 32px;background:#1f1c18;color:#faf7f1;font:500 11px/1 'Jost',sans-serif;letter-spacing:.24em;text-transform:uppercase;transition:background .45s ease"
+                )}
+              >
+                Download invitation
+              </a>
+              <a
+                href="/invitation"
+                target="_blank"
+                rel="noopener"
+                style={css(
+                  "padding:17px 32px;border:1px solid rgba(31,28,24,.26);color:#1f1c18;font:500 11px/1 'Jost',sans-serif;letter-spacing:.24em;text-transform:uppercase;transition:border-color .4s ease,color .4s ease"
+                )}
+              >
+                View full invitation
+              </a>
+            </div>
+            <div style={css('display:flex;align-items:center;gap:20px;padding-top:6px')}>
+              <div
+                ref={qrRef}
+                style={css(
+                  'width:124px;height:124px;flex:0 0 auto;background:#faf7f1;border:1px solid rgba(31,28,24,.14);display:flex;align-items:center;justify-content:center;padding:8px;box-sizing:border-box'
+                )}
+              />
+              <div style={css('display:flex;flex-direction:column;gap:6px')}>
+                <span style={css("font:500 9.5px/1 'Jost',sans-serif;letter-spacing:.26em;text-transform:uppercase;color:#9a6f4c")}>
+                  Scan to open
+                </span>
+                <span style={css("font:300 13.5px/1.7 'Jost',sans-serif;color:#6b6259;max-width:24ch")}>
+                  Points straight to the digital invitation.
+                </span>
+              </div>
+            </div>
+          </Reveal>
+        </div>
+      </div>
+    </section>
+  );
+}
