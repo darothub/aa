@@ -1,6 +1,8 @@
 import { NextResponse } from 'next/server';
 import { insertRsvp, type Attending } from '@/lib/db';
 
+export const runtime = 'edge';
+
 function isAttending(value: unknown): value is Attending {
   return value === 'yes' || value === 'no';
 }
