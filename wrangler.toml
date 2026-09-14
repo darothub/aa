@@ -3,6 +3,12 @@ main = ".open-next/worker.js"
 compatibility_date = "2025-03-01"
 compatibility_flags = ["nodejs_compat", "global_fetch_strictly_public"]
 
+# The live site. Bound as a custom domain, so Cloudflare manages the DNS record
+# and the certificate; the binding follows the Worker, not a given version.
+[[routes]]
+pattern = "wedding.aishatandabdul.com"
+custom_domain = true
+
 # Built by `opennextjs-cloudflare build`. Static files are served straight from
 # the assets binding; anything else falls through to the Worker.
 [assets]
