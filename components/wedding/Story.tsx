@@ -4,44 +4,7 @@ import { useEffect, useRef, useState } from 'react';
 import type { PointerEvent as ReactPointerEvent } from 'react';
 import { css } from '@/lib/css';
 import Reveal from '@/components/Reveal';
-
-const SLIDES = [
-  {
-    id: 'story-1',
-    era: '2019 — The beginning',
-    title: 'A wedding neither of us wanted to attend',
-    body: "Placeholder: seated at the same table by accident, they argued about jollof for an hour and neither went home early. Abdul asked for a number; Aishat gave him the wrong one on purpose, then corrected it three days later.",
-    placeholder: '2019 — The beginning — photo'
-  },
-  {
-    id: 'story-2',
-    era: '2021 — Somewhere else',
-    title: 'The first trip, and the first plan',
-    body: 'Placeholder: a long drive, a bad playlist, and the first time either of them said the word "always" out loud. They came back with a shared calendar and a habit of finishing each other’s sentences.',
-    placeholder: '2021 — Somewhere else — photo'
-  },
-  {
-    id: 'story-3',
-    era: '2023 — Home',
-    title: 'A flat with two kettles',
-    body: 'Placeholder: they moved in together, kept both kettles, and learned that love is mostly logistics done kindly — plus somebody always making tea.',
-    placeholder: '2023 — Home — photo'
-  },
-  {
-    id: 'story-4',
-    era: '2025 — The question',
-    title: 'Asked badly, answered immediately',
-    body: 'Placeholder: in the rain, with the ring in the wrong pocket and the speech entirely forgotten. She said yes before he finished the sentence.',
-    placeholder: '2025 — The question — photo'
-  },
-  {
-    id: 'story-5',
-    era: '2026 — November',
-    title: 'Everyone we love, one room',
-    body: 'Placeholder: Abuja in November, a hall full of the people who carried us here, and the part of the story where you come in.',
-    placeholder: '2026 — November — photo'
-  }
-];
+import { STORY_SLIDES } from '@/content/wedding';
 
 export default function Story() {
   const viewportRef = useRef<HTMLDivElement>(null);
@@ -51,7 +14,7 @@ export default function Story() {
   const resumeTimer = useRef<ReturnType<typeof setTimeout>>();
   const dragState = useRef<{ x0: number; dx: number } | null>(null);
 
-  const go = (i: number) => setIndex(((i % SLIDES.length) + SLIDES.length) % SLIDES.length);
+  const go = (i: number) => setIndex(((i % STORY_SLIDES.length) + STORY_SLIDES.length) % STORY_SLIDES.length);
 
   const nudge = () => {
     pausedRef.current = true;
@@ -112,11 +75,12 @@ export default function Story() {
             Our love story
           </p>
           <h2 style={css("margin:0;font:300 clamp(36px,6.5vw,72px)/1.02 'Cormorant Garamond',serif;letter-spacing:-.015em")}>
-            Seven years, one long conversation.
+            Four years, one beautiful journey.
           </h2>
           <p style={css("margin:0;font:300 clamp(15px,1.7vw,17px)/1.8 'Jost',sans-serif;color:#6b6259;text-wrap:pretty")}>
-            Placeholder copy — tell us the real beats and we&apos;ll write them in. For now, five moments that carried
-            us from a crowded room in Abuja to a promise in front of everyone we love.
+            What began with long phone conversations, shared dreams, and finally meeting in Porto became a story of laughter, friendship,
+            growth, and resilience. From calm waters to difficult waves, we learned how to steady the ship together and now,
+            wherever life takes us, we keep sailing forward side by side.
           </p>
         </Reveal>
 
@@ -133,7 +97,7 @@ export default function Story() {
             onMouseLeave={() => (pausedRef.current = false)}
           >
             <div data-story-track ref={trackRef}>
-              {SLIDES.map((slide) => (
+              {STORY_SLIDES.map((slide) => (
                 <article
                   key={slide.id}
                   data-story-slide
@@ -146,7 +110,9 @@ export default function Story() {
                     <img
                       src={`/images/${slide.id}.jpg`}
                       alt={slide.placeholder}
-                      style={css('width:100%;height:100%;object-fit:cover;display:block')}
+                      style={css(
+                        `width:100%;height:100%;object-fit:cover;object-position:50% ${slide.focalY ?? '50%'};display:block`
+                      )}
                     />
                   </div>
                   <div style={css('display:flex;flex-direction:column;gap:14px')}>
@@ -171,7 +137,7 @@ export default function Story() {
             )}
           >
             <div style={css('display:flex;align-items:center;gap:9px')}>
-              {SLIDES.map((slide, i) => (
+              {STORY_SLIDES.map((slide, i) => (
                 <button
                   key={slide.id}
                   type="button"
@@ -190,7 +156,7 @@ export default function Story() {
             </div>
             <div style={css('display:flex;align-items:center;gap:14px')}>
               <span style={css("font:400 11px/1 'Jost',sans-serif;letter-spacing:.2em;color:#a89d8f;font-variant-numeric:tabular-nums")}>
-                {String(index + 1).padStart(2, '0')} / 05
+                {String(index + 1).padStart(2, '0')} / {String(STORY_SLIDES.length).padStart(2, '0')}
               </span>
               <button
                 type="button"

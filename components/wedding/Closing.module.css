@@ -1,0 +1,12 @@
+.content {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr);
+  align-items: end;
+  gap: clamp(24px, 4vw, 48px);
+}
+
+@media (min-width: 860px) {
+  .content {
+    grid-template-columns: minmax(0, 1.2fr) minmax(0, 1fr);
+  }
+}

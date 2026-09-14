@@ -4,8 +4,7 @@ import { useEffect, useRef, useState } from 'react';
 import type { Map as LeafletMap } from 'leaflet';
 import { css } from '@/lib/css';
 import Reveal from '@/components/Reveal';
-
-const VENUE = { lat: 9.0466, lng: 7.5334 };
+import { TRAVEL_REFERENCE, VENUE } from '@/content/wedding';
 
 type TravelState = 'idle' | 'locating' | 'ok' | 'denied' | 'unsupported';
 
@@ -37,7 +36,7 @@ export default function Travel() {
         fillOpacity: 0.85
       })
         .addTo(map)
-        .bindPopup('<strong>Aso Rock Banquet Hall</strong><br>Asokoro, Abuja');
+        .bindPopup(VENUE.mapPopupHtml);
       L.circle([VENUE.lat, VENUE.lng], { radius: 420, color: '#9a6f4c', weight: 1, opacity: 0.35, fillOpacity: 0.06 }).addTo(
         map
       );
@@ -106,16 +105,15 @@ export default function Travel() {
     travelNote = 'One moment while your device shares its position.';
     showLocateBtn = false;
   } else if (travelState === 'denied') {
-    travelHeadline = '15 minutes from the city centre';
-    travelNote =
-      'No location shared — that is completely fine. Asokoro sits roughly 15 minutes from Central Business District and 35 minutes from Nnamdi Azikiwe International Airport.';
+    travelHeadline = `${TRAVEL_REFERENCE.cityCentre.minutes} minutes from the city centre`;
+    travelNote = `No location shared — that is completely fine. ${VENUE.district} sits roughly ${TRAVEL_REFERENCE.cityCentre.minutes} minutes from ${TRAVEL_REFERENCE.cityCentre.label} and ${TRAVEL_REFERENCE.airport.minutes} minutes from ${TRAVEL_REFERENCE.airport.label}.`;
     showLocateBtn = false;
   } else if (travelState === 'unsupported') {
-    travelHeadline = '15 minutes from the city centre';
-    travelNote = 'Roughly 15 minutes from Central Business District, 35 minutes from Nnamdi Azikiwe International Airport.';
+    travelHeadline = `${TRAVEL_REFERENCE.cityCentre.minutes} minutes from the city centre`;
+    travelNote = `Roughly ${TRAVEL_REFERENCE.cityCentre.minutes} minutes from ${TRAVEL_REFERENCE.cityCentre.label}, ${TRAVEL_REFERENCE.airport.minutes} minutes from ${TRAVEL_REFERENCE.airport.label}.`;
     showLocateBtn = false;
   } else {
-    travelHeadline = 'How far are you from Asokoro?';
+    travelHeadline = `How far are you from ${VENUE.district}?`;
     travelNote = 'Share your location and we will estimate the drive. Everything here works perfectly well if you would rather not.';
   }
 
@@ -130,7 +128,7 @@ export default function Travel() {
             Getting there
           </p>
           <h2 style={css("margin:0;font:300 clamp(36px,6.5vw,72px)/1.02 'Cormorant Garamond',serif;letter-spacing:-.015em")}>
-            Asokoro, and how far you are from it.
+            {VENUE.district}, and how far you are from it.
           </h2>
         </Reveal>
 
@@ -141,9 +139,9 @@ export default function Travel() {
                 Address
               </span>
               <span style={css("font:300 clamp(17px,2vw,20px)/1.6 'Jost',sans-serif;color:#1f1c18")}>
-                Aso Rock Banquet Hall,
+                {VENUE.name},
                 <br />
-                Asokoro District, Abuja, FCT, Nigeria
+                {VENUE.fullAddress}
               </span>
             </div>
 
@@ -170,7 +168,7 @@ export default function Travel() {
 
             <div style={css('display:flex;flex-wrap:wrap;gap:12px')}>
               <a
-                href="https://www.google.com/maps/dir/?api=1&destination=Aso+Rock+Banquet+Hall%2C+Asokoro%2C+Abuja"
+                href={VENUE.googleMapsUrl}
                 target="_blank"
                 rel="noopener"
                 style={css(
@@ -180,7 +178,7 @@ export default function Travel() {
                 Google Maps
               </a>
               <a
-                href="https://maps.apple.com/?daddr=Aso+Rock+Banquet+Hall%2C+Asokoro%2C+Abuja&dirflg=d"
+                href={VENUE.appleMapsUrl}
                 target="_blank"
                 rel="noopener"
                 style={css(
@@ -215,7 +213,7 @@ export default function Travel() {
             <div
               ref={mapElRef}
               role="img"
-              aria-label="Map of Aso Rock Banquet Hall, Asokoro, Abuja"
+              aria-label={`Map of ${VENUE.name}, ${VENUE.shortAddress}`}
               style={css('width:100%;height:clamp(300px,52vw,520px);background:#e8e1d6;border:1px solid rgba(31,28,24,.14)')}
             />
             <p style={css("margin:10px 0 0;font:300 12px/1.6 'Jost',sans-serif;color:#a89d8f")}>

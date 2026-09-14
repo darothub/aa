@@ -3,6 +3,7 @@
 import { useState } from 'react';
 import { useSolidNav } from '@/lib/hooks';
 import { css } from '@/lib/css';
+import { HASHTAG, LOGO, WEDDING_DATE } from '@/content/wedding';
 
 const NAV_LINKS = [
   { href: '#countdown', label: 'Countdown' },
@@ -26,14 +27,31 @@ export default function Header() {
           'position:fixed;top:0;left:0;right:0;z-index:60;display:flex;align-items:center;justify-content:space-between;gap:16px;transition:background .5s ease,padding .5s ease,box-shadow .5s ease,backdrop-filter .5s ease'
         )}
       >
-        <a href="#top" style={css('display:flex;flex-direction:column;gap:3px;color:inherit')}>
-          <span style={css("font:400 20px/1 'Cormorant Garamond',serif;letter-spacing:.05em")}>A &amp; A</span>
+        <a href="#top" style={css('display:flex;align-items:center;gap:10px;color:inherit')}>
+          {/* The logo artwork carries its own near-black background baked in,
+              which clashes with the header's own background as it transitions
+              between transparent-over-photo and solid cream on scroll. Giving
+              it a fixed near-black badge of its own — rather than letting the
+              image sit directly on the header — makes that background a
+              deliberate part of the mark instead of a seam that shifts under it. */}
+          <span
+            style={css(
+              'display:flex;align-items:center;justify-content:center;width:34px;height:34px;border-radius:8px;background:#1f1c18;overflow:hidden;flex-shrink:0'
+            )}
+          >
+            {/* eslint-disable-next-line @next/next/no-img-element */}
+            <img
+              src={LOGO.src}
+              alt="Aisha and Abdul"
+              style={css('width:100%;height:100%;object-fit:contain')}
+            />
+          </span>
           <span
             style={css(
               "font:400 8.5px/1 'Jost',sans-serif;letter-spacing:.3em;text-transform:uppercase;opacity:.7"
             )}
           >
-            21 . 11 . 26
+            {WEDDING_DATE.shortLabel}
           </span>
         </a>
 
@@ -91,6 +109,15 @@ export default function Header() {
         >
           ×
         </button>
+        {/* The drawer's own background (#1f1c18) is close enough to the
+            artwork's near-black background that the seam is invisible without
+            needing a blend mode. */}
+        {/* eslint-disable-next-line @next/next/no-img-element */}
+        <img
+          src={LOGO.src}
+          alt="Aisha and Abdul — AlignedInLove"
+          style={css('width:min(46vw,164px);height:auto;margin-bottom:4px')}
+        />
         {NAV_LINKS.map((link) => (
           <a
             key={link.href}
@@ -110,6 +137,13 @@ export default function Header() {
         >
           RSVP
         </a>
+        <span
+          style={css(
+            "margin-top:6px;font:400 11px/1 'Jost',sans-serif;letter-spacing:.22em;color:rgba(250,247,241,.45)"
+          )}
+        >
+          {HASHTAG.tag}
+        </span>
       </div>
     </>
   );

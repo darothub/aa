@@ -5,20 +5,24 @@ import Story from './Story';
 import Details from './Details';
 import Travel from './Travel';
 import Rsvp from './Rsvp';
+import GuestBook from './GuestBook';
 import InvitationTeaser from './InvitationTeaser';
 import Closing from './Closing';
+import SplashScreen from './SplashScreen';
 
 export default function WeddingPage() {
   return (
     <div style={{ position: 'relative', width: '100%' }}>
+      <SplashScreen />
       <Header />
       <Hero />
       <Countdown />
       <Story />
       <Details />
       <Travel />
-      <Rsvp />
       <InvitationTeaser />
+      <Rsvp />
+      <GuestBook />
       <Closing />
     </div>
   );

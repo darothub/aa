@@ -1,10 +1,15 @@
 import type { Metadata } from 'next';
 import type { ReactNode } from 'react';
 import './globals.css';
+import { COUPLE, VENUE, WEDDING_DATE } from '@/content/wedding';
 
 export const metadata: Metadata = {
-  title: 'Aishat & Abdul — 21 November 2026',
-  description: 'Join Aishat and Abdul as they celebrate their wedding in Abuja on 21 November 2026.'
+  title: `${COUPLE.partner1} & ${COUPLE.partner2} — ${WEDDING_DATE.label}`,
+  description: `Join ${COUPLE.partner1} and ${COUPLE.partner2} as they celebrate their wedding at ${VENUE.name} in ${VENUE.city} on ${WEDDING_DATE.label}.`,
+  icons: {
+    icon: '/images/logo-monogram.jpg',
+    apple: '/images/logo-monogram.jpg'
+  }
 };
 
 export default function RootLayout({ children }: { children: ReactNode }) {

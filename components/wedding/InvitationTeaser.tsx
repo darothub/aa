@@ -3,6 +3,7 @@
 import { useEffect, useRef } from 'react';
 import { css } from '@/lib/css';
 import Reveal from '@/components/Reveal';
+import { COUPLE, DRESS_CODE, LOGO, VENUE, WEDDING_DATE } from '@/content/wedding';
 
 export default function InvitationTeaser() {
   const qrRef = useRef<HTMLDivElement>(null);
@@ -51,29 +52,43 @@ export default function InvitationTeaser() {
           >
             <div style={css('position:absolute;inset:14px;border:1px solid rgba(154,111,76,.32);pointer-events:none')} />
             <div style={css('position:relative;display:flex;flex-direction:column;align-items:center;text-align:center;gap:18px')}>
-              <div
+              <p
+                dir="rtl"
+                lang="ar"
                 style={css(
-                  "width:46px;height:46px;border:1px solid rgba(154,111,76,.5);border-radius:50%;display:flex;align-items:center;justify-content:center;font:400 16px/1 'Cormorant Garamond',serif;color:#9a6f4c"
+                  "margin:0;font:400 15px/1.4 'Amiri','Traditional Arabic',serif;color:#9a6f4c;text-align:center"
                 )}
               >
-                A&nbsp;A
+                بِسْمِ ٱللَّٰهِ ٱلرَّحْمَٰنِ ٱلرَّحِيمِ
+              </p>
+              <div
+                style={css(
+                  'width:46px;height:46px;border-radius:50%;overflow:hidden;box-shadow:0 0 0 1px rgba(154,111,76,.5)'
+                )}
+              >
+                {/* eslint-disable-next-line @next/next/no-img-element */}
+                <img
+                  src={LOGO.src}
+                  alt={LOGO.alt}
+                  style={css('width:100%;height:100%;object-fit:cover;object-position:50% 38%;display:block')}
+                />
               </div>
               <p style={css("margin:0;font:500 9.5px/1 'Jost',sans-serif;letter-spacing:.32em;text-transform:uppercase;color:#9a6f4c")}>
                 Together with our families
               </p>
               <h3 style={css("margin:0;font:300 clamp(30px,5.6vw,50px)/1.05 'Cormorant Garamond',serif")}>
-                Aishat <span style={css('font-style:italic;color:#9a6f4c')}>&amp;</span> Abdul
+                {COUPLE.partner1} <span style={css('font-style:italic;color:#9a6f4c')}>&amp;</span> {COUPLE.partner2}
               </h3>
               <div style={css('width:44px;height:1px;background:rgba(154,111,76,.45)')} />
               <p style={css("margin:0;font:300 14px/1.8 'Jost',sans-serif;color:#6b6259")}>
-                Saturday 21 November 2026 · 2:00 pm
+                {WEDDING_DATE.label} · {WEDDING_DATE.ceremonyTime}
                 <br />
-                Aso Rock Banquet Hall
+                {VENUE.name}
                 <br />
-                Asokoro District, Abuja
+                {VENUE.shortAddress}
               </p>
               <p style={css("margin:0;font:300 12.5px/1.7 'Jost',sans-serif;color:#a89d8f")}>
-                Formal / cocktail · Kindly reply by 24 October
+                {DRESS_CODE.label} · Kindly reply by {WEDDING_DATE.rsvpDeadline}
               </p>
             </div>
           </Reveal>
@@ -103,6 +118,14 @@ export default function InvitationTeaser() {
                 )}
               >
                 View full invitation
+              </a>
+              <a
+                href="#rsvp"
+                style={css(
+                  "padding:17px 32px;border:1px solid rgba(154,111,76,.5);color:#9a6f4c;font:500 11px/1 'Jost',sans-serif;letter-spacing:.24em;text-transform:uppercase;transition:border-color .4s ease,color .4s ease"
+                )}
+              >
+                RSVP now
               </a>
             </div>
             <div style={css('display:flex;align-items:center;gap:20px;padding-top:6px')}>

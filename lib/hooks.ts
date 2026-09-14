@@ -63,9 +63,17 @@ function calcCountdown(iso: string): CountdownState {
   };
 }
 
+// Starts at a fixed placeholder so server and first client render agree (Date.now()
+// would otherwise differ between the server render and the client hydration render,
+// and the mismatched days/hours/minutes/seconds text is what trips React's hydration
+// error). The real value is filled in by the effect right after mount, then refreshed
+// every second — the same "false-until-mount" pattern Hero.tsx uses for its video flag.
+const INITIAL_COUNTDOWN: CountdownState = { past: false, sameDay: false, days: 0, hours: 0, minutes: 0, seconds: 0 };
+
 export function useCountdown(iso: string): CountdownState {
-  const [state, setState] = useState<CountdownState>(() => calcCountdown(iso));
+  const [state, setState] = useState<CountdownState>(INITIAL_COUNTDOWN);
   useEffect(() => {
+    setState(calcCountdown(iso));
     const id = setInterval(() => setState(calcCountdown(iso)), 1000);
     return () => clearInterval(id);
   }, [iso]);
@@ -113,6 +121,38 @@ export function countdownMessage(c: CountdownState): { message: string; subMessa
     message: 'Tomorrow. Actually tomorrow.',
     subMessage: 'We have run out of ways to say it — so, see you there.'
   };
+}
+
+const SPLASH_SEEN_KEY = 'weddingSplashSeen';
+
+/**
+ * Drives the first-visit splash overlay. Starts false so nothing renders
+ * during SSR or the first client paint (the same "false-until-mount" pattern
+ * used above for Hero.tsx's video flag and useCountdown's initial state) —
+ * the mount effect then checks localStorage once: unseen, it shows the splash
+ * and marks it seen; already seen, it stays hidden for good. Reduced-motion
+ * visitors skip the splash outright, mirroring useRevealOnce's reduced-motion
+ * branch below.
+ */
+export function useFirstVisitSplash(durationMs = 2800): { visible: boolean; closing: boolean } {
+  const [visible, setVisible] = useState(false);
+  const [closing, setClosing] = useState(false);
+
+  useEffect(() => {
+    if (window.localStorage.getItem(SPLASH_SEEN_KEY)) return;
+    window.localStorage.setItem(SPLASH_SEEN_KEY, '1');
+    if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) return;
+
+    setVisible(true);
+    const closeTimer = setTimeout(() => setClosing(true), durationMs);
+    const hideTimer = setTimeout(() => setVisible(false), durationMs + 500);
+    return () => {
+      clearTimeout(closeTimer);
+      clearTimeout(hideTimer);
+    };
+  }, [durationMs]);
+
+  return { visible, closing };
 }
 
 /** Mirrors the original data-reveal / data-shown pattern: reveal once, on first intersection. */

@@ -1,12 +1,24 @@
 'use client';
 
-import { useRef } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { css } from '@/lib/css';
 import { useScrollTransform } from '@/lib/hooks';
+import Hashtag from './Hashtag';
+import { COUPLE, HERO_MEDIA, VENUE, WEDDING_DATE } from '@/content/wedding';
 
 export default function Hero() {
   const imgRef = useRef<HTMLDivElement>(null);
   useScrollTransform(imgRef, (y) => Math.min(y * 0.07, 30));
+
+  // Starts false so server and first client render agree (no video source
+  // exists on the server to check against); flips to true on mount if a
+  // video is configured and the visitor hasn't asked for reduced motion.
+  const [playVideo, setPlayVideo] = useState(false);
+  useEffect(() => {
+    if (!HERO_MEDIA.video) return;
+    const reduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+    if (!reduced) setPlayVideo(true);
+  }, []);
 
   return (
     <section
@@ -20,12 +32,32 @@ export default function Hero() {
           ref={imgRef}
           style={css('position:absolute;top:0;left:0;right:0;height:122%;will-change:transform;opacity:.94')}
         >
-          {/* eslint-disable-next-line @next/next/no-img-element */}
-          <img
-            src="/images/hero-couple.jpg"
-            alt="Aishat and Abdul"
-            style={css('width:100%;height:100%;object-fit:cover;display:block')}
-          />
+          {playVideo ? (
+            <video
+              autoPlay
+              muted
+              loop
+              playsInline
+              poster={HERO_MEDIA.poster}
+              onError={() => setPlayVideo(false)}
+              style={css('width:100%;height:100%;object-fit:cover;display:block')}
+            >
+              <source src={HERO_MEDIA.video!} type="video/mp4" />
+              {/* eslint-disable-next-line @next/next/no-img-element */}
+              <img
+                src={HERO_MEDIA.poster}
+                alt={`${COUPLE.partner1} and ${COUPLE.partner2}`}
+                style={css('width:100%;height:100%;object-fit:cover;display:block')}
+              />
+            </video>
+          ) : (
+            // eslint-disable-next-line @next/next/no-img-element
+            <img
+              src={HERO_MEDIA.poster}
+              alt={`${COUPLE.partner1} and ${COUPLE.partner2}`}
+              style={css('width:100%;height:100%;object-fit:cover;display:block')}
+            />
+          )}
         </div>
         <div
           style={css(
@@ -58,7 +90,7 @@ export default function Hero() {
               "margin:0;font:300 clamp(40px,8.6vw,118px)/.92 'Cormorant Garamond',serif;color:#faf7f1;letter-spacing:-.02em"
             )}
           >
-            Aishat
+            {COUPLE.partner1}
             <br />
             <span
               style={css(
@@ -68,7 +100,7 @@ export default function Hero() {
               &amp;
             </span>
             <br />
-            Abdul
+            {COUPLE.partner2}
           </h1>
         </div>
 
@@ -87,7 +119,7 @@ export default function Hero() {
                 The day
               </span>
               <span style={css("font:400 clamp(15px,2vw,19px)/1.4 'Jost',sans-serif;font-weight:300;color:#faf7f1")}>
-                Saturday 21 November 2026
+                {WEDDING_DATE.label}
               </span>
             </div>
             <div style={css('display:flex;flex-direction:column;gap:7px')}>
@@ -99,7 +131,22 @@ export default function Hero() {
                 The place
               </span>
               <span style={css("font:400 clamp(15px,2vw,19px)/1.4 'Jost',sans-serif;font-weight:300;color:#faf7f1")}>
-                Aso Rock Banquet Hall, Abuja
+                {VENUE.name}, {VENUE.city}
+              </span>
+            </div>
+            {/* Third rail item, in the grammar the other two already established.
+                pointer-events has to be re-enabled here: the whole overlay is
+                inert so the parallax reads through it, same as the CTA below. */}
+            <div style={css('display:flex;flex-direction:column;gap:7px;align-items:flex-start')}>
+              <span
+                style={css(
+                  "font:500 9.5px/1 'Jost',sans-serif;letter-spacing:.3em;text-transform:uppercase;color:rgba(250,247,241,.6)"
+                )}
+              >
+                The hashtag
+              </span>
+              <span style={css('pointer-events:auto;display:inline-flex')}>
+                <Hashtag tone="light" size={12} />
               </span>
             </div>
           </div>

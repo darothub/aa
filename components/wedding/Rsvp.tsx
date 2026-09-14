@@ -3,6 +3,8 @@
 import { useState, type FormEvent } from 'react';
 import { css } from '@/lib/css';
 import Reveal from '@/components/Reveal';
+import Hashtag from './Hashtag';
+import { HASHTAG, WEDDING_DATE } from '@/content/wedding';
 
 export default function Rsvp() {
   const [name, setName] = useState('');
@@ -51,6 +53,10 @@ export default function Rsvp() {
     attending === 'yes'
       ? `Saved, ${firstName}. We will send timings and travel details closer to the day. Somebody just cheered.`
       : `We will miss you, ${firstName} — and we will make sure you see every photograph.`;
+  // Both replies get the tag, for different reasons: the guests who are coming
+  // will post with it, and the ones who can't are how they watch the day.
+  const hashtagNote =
+    attending === 'yes' ? HASHTAG.invite : 'Follow it on the day and you will see the whole thing unfold.';
 
   return (
     <section id="rsvp" style={css('scroll-margin-top:104px;padding:clamp(76px,12vw,150px) clamp(20px,5vw,72px);background:#1f1c18')}>
@@ -67,7 +73,16 @@ export default function Rsvp() {
             Will you be there?
           </h2>
           <p style={css("margin:0;font:300 clamp(14.5px,1.6vw,16px)/1.8 'Jost',sans-serif;color:rgba(250,247,241,.6)")}>
-            Kindly reply by 24 October 2026.
+            Kindly reply by {WEDDING_DATE.rsvpDeadline}.{' '}
+            <a
+              href="/invitation"
+              target="_blank"
+              rel="noopener"
+              style={css('color:#c39a72;text-decoration:underline')}
+            >
+              Read the full invitation
+            </a>{' '}
+            for venue, timing and attire.
           </p>
         </Reveal>
 
@@ -165,6 +180,25 @@ export default function Rsvp() {
             <p style={css("margin:0;max-width:38ch;font:300 14.5px/1.8 'Jost',sans-serif;color:rgba(250,247,241,.6)")}>
               {successBody}
             </p>
+
+            <div
+              style={css(
+                'display:flex;flex-direction:column;align-items:center;gap:12px;margin-top:6px;padding-top:20px;border-top:1px solid rgba(250,247,241,.14);width:100%'
+              )}
+            >
+              <span
+                style={css(
+                  "font:500 9px/1 'Jost',sans-serif;letter-spacing:.3em;text-transform:uppercase;color:rgba(250,247,241,.42)"
+                )}
+              >
+                One more thing
+              </span>
+              <Hashtag tone="light" size={12} />
+              <span style={css("margin:0;max-width:36ch;font:300 13px/1.7 'Jost',sans-serif;color:rgba(250,247,241,.5)")}>
+                {hashtagNote}
+              </span>
+            </div>
+
             <button
               type="button"
               onClick={() => setDone(false)}

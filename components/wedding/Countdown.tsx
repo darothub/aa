@@ -2,8 +2,7 @@
 
 import { css } from '@/lib/css';
 import { countdownMessage, useCountdown } from '@/lib/hooks';
-
-const WEDDING_DATE_ISO = '2026-11-21T14:00:00+01:00';
+import { WEDDING_DATE } from '@/content/wedding';
 
 // Position, size, colour, animation and delay copied verbatim from the original
 // falling-petal decoration so the countdown section reads identically.
@@ -33,8 +32,11 @@ function two(n: number) {
 }
 
 export default function Countdown() {
-  const c = useCountdown(WEDDING_DATE_ISO);
-  const { message, subMessage } = countdownMessage(c);
+  // null until the first client-side tick fires (see useCountdown) — before
+  // that, both server and client render the same "counting down" label with
+  // no digits and no message, so there's nothing for hydration to disagree on.
+  const c = useCountdown(WEDDING_DATE.iso);
+  const { message, subMessage } = c ? countdownMessage(c) : { message: ' ', subMessage: ' ' };
 
   return (
     <section
@@ -71,7 +73,7 @@ export default function Countdown() {
           Counting down
         </p>
 
-        {!c.past && (
+        {c && !c.past && (
           <div style={css('display:flex;flex-wrap:wrap;justify-content:center;gap:clamp(4px,2.5vw,20px)')}>
             {[
               { label: 'Days', value: String(c.days), color: '#faf7f1' },

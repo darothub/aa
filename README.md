@@ -17,9 +17,88 @@ npm run dev
 
 Run `migrations/0001_create_rsvps.sql` against whatever Postgres instance
 `DATABASE_URL` points to. Data access uses `@neondatabase/serverless`
-directly — attach a Postgres database from the Vercel Marketplace (Neon is
-the native integration) and Vercel injects `DATABASE_URL` into the deployed
-environment automatically.
+directly, which speaks HTTP rather than TCP and so works on Workers as well as
+on Vercel.
+
+## Deploying to Cloudflare (Workers, via OpenNext)
+
+The site deploys as a **Worker with static assets**, built by
+[`@opennextjs/cloudflare`](https://opennext.js.org/cloudflare). It replaces
+`@cloudflare/next-on-pages`, which Cloudflare has deprecated in favour of
+OpenNext. Three files carry the setup:
+
+| File | What it does |
+|---|---|
+| `wrangler.toml` | Worker name, `main = ".open-next/worker.js"`, and the `[assets]` binding pointing at `.open-next/assets`. |
+| `open-next.config.ts` | The adapter's config. Empty defaults — no ISR here, so no cache backend is wired. |
+| `next.config.mjs` | Calls `initOpenNextCloudflareForDev()` so `next dev` can see Cloudflare bindings. |
+
+Build output is `.open-next/`, not `.vercel/output/static`.
+
+### Deploy from your machine
+
+```bash
+cd web
+npm install
+npx wrangler login       # once
+npm run cf:deploy
+```
+
+`cf:deploy` runs `next build`, converts the output, then calls `wrangler
+deploy`. Unlike Pages, this **creates the Worker on first deploy** — there is
+no `wrangler pages project create` prerequisite and no
+`Project not found [code: 8000007]` failure mode.
+
+To run the real Worker locally before shipping:
+
+```bash
+npm run cf:preview
+```
+
+### Secrets
+
+```bash
+npx wrangler secret put DATABASE_URL
+```
+
+`process.env.DATABASE_URL` is populated from the Worker's env at request time,
+so `lib/db.ts` needs no change. For plain `next dev`, keep the value in
+`.env.local`; for `npm run cf:preview` (which runs under workerd) put it in
+`.dev.vars`:
+
+```
+DATABASE_URL=postgres://...
+```
+
+Both files are gitignored.
+
+### Deploy from Git (Workers Builds)
+
+In the Cloudflare dashboard → **Workers & Pages → this Worker → Settings →
+Builds**:
+
+- Root directory: `web`
+- Build command: `npm run cf:build`
+- Deploy command: `npx opennextjs-cloudflare deploy`
+
+The API token in `CLOUDFLARE_API_TOKEN` needs **Account → Workers Scripts →
+Edit**. The **Cloudflare Pages → Edit** scope the previous setup required no
+longer applies; a Super Administrator *membership role* still grants a token
+nothing on its own.
+
+### If a Pages project was already created
+
+A Pages project named `aa-wedding-site` (or `aa`) is now unused — this deploy
+never touches it. Delete it, and move any custom domain attached to it over to
+the Worker.
+
+### Reading the failure modes
+
+| Error | What it actually means |
+|---|---|
+| `Authentication error [code: 10000]` | Token is valid but lacks the scope for the operation. For Workers that is Workers Scripts: Edit. |
+| `It looks like you've run a Workers-specific command in a Pages project` | `wrangler.toml` still sets `pages_build_output_dir`; the OpenNext config must not. |
+| `No matching export ... .open-next/worker.js` | `opennextjs-cloudflare build` did not run before `wrangler deploy`. Use the `cf:*` scripts, which chain them. |
 
 ## Deploying to the existing Vercel project
 
