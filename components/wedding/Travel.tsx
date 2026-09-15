@@ -214,7 +214,15 @@ export default function Travel() {
               ref={mapElRef}
               role="img"
               aria-label={`Map of ${VENUE.name}, ${VENUE.shortAddress}`}
-              style={css('width:100%;height:clamp(300px,52vw,520px);background:#e8e1d6;border:1px solid rgba(31,28,24,.14)')}
+              // position+z-index give the map its own stacking context, which
+              // is what keeps it under the fixed header. Leaflet's stylesheet
+              // assigns its panes and controls z-indexes up to 1000; the header
+              // sits at 60, so without a context here the map scrolls over the
+              // navigation. Confining it costs nothing — nothing inside the map
+              // needs to paint above the page.
+              style={css(
+                'position:relative;z-index:0;width:100%;height:clamp(300px,52vw,520px);background:#e8e1d6;border:1px solid rgba(31,28,24,.14)'
+              )}
             />
             <p style={css("margin:10px 0 0;font:300 12px/1.6 'Jost',sans-serif;color:#a89d8f")}>
               Map data © OpenStreetMap contributors. Pin is approximate — tap through for turn-by-turn directions.
