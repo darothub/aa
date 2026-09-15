@@ -1,14 +1,22 @@
 import type { Metadata } from 'next';
 import type { ReactNode } from 'react';
 import './globals.css';
-import { COUPLE, VENUE, WEDDING_DATE } from '@/content/wedding';
+import { COUPLE, WEDDING_DATE } from '@/content/wedding';
+import { RoleProvider } from '@/lib/role-context';
+import { currentRole } from '@/lib/session';
 
 const title = `${COUPLE.partner1} & ${COUPLE.partner2} — ${WEDDING_DATE.label}`;
-const description = `Join ${COUPLE.partner1} and ${COUPLE.partner2} as they celebrate their wedding at ${VENUE.name} in ${VENUE.city} on ${WEDDING_DATE.label}.`;
+// Deliberately vague about where. This is the only copy that reaches someone
+// without a passcode — it is what a link preview shows in a chat thread — so it
+// gives the occasion and the date and withholds the venue, which is the detail
+// a gated site exists to keep among invited guests.
+const description = `${COUPLE.partner1} and ${COUPLE.partner2} are getting married on ${WEDDING_DATE.label}. Strictly by invitation.`;
 
 export const metadata: Metadata = {
   title,
   description,
+  // The whole site sits behind a passcode; there is nothing here to index.
+  robots: { index: false, follow: false },
   icons: {
     icon: '/images/logo-mark.jpg',
     apple: '/images/logo-mark.jpg'
@@ -31,7 +39,11 @@ export const viewport = {
   themeColor: '#f7f3ec'
 };
 
-export default function RootLayout({ children }: { children: ReactNode }) {
+// Reads the session cookie to pass the role down, so pages render per request.
+export const dynamic = 'force-dynamic';
+
+export default async function RootLayout({ children }: { children: ReactNode }) {
+  const role = await currentRole();
   return (
     <html lang="en">
       <head>
@@ -42,7 +54,9 @@ export default function RootLayout({ children }: { children: ReactNode }) {
           rel="stylesheet"
         />
       </head>
-      <body>{children}</body>
+      <body>
+        <RoleProvider role={role}>{children}</RoleProvider>
+      </body>
     </html>
   );
 }

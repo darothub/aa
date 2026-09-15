@@ -2,6 +2,7 @@
 
 import { useEffect, useRef, useState } from 'react';
 import { useSolidNav } from '@/lib/hooks';
+import { useRole } from '@/lib/role-context';
 import { css } from '@/lib/css';
 import { HASHTAG, LOGO, WEDDING_DATE } from '@/content/wedding';
 
@@ -11,12 +12,30 @@ const NAV_LINKS = [
   { href: '#details', label: 'Details' },
   { href: '#travel', label: 'Getting there' },
   { href: '#invitation', label: 'Invitation' },
-  { href: '/gallery', label: 'Gallery' },
   { href: '/upload', label: 'Add photos' }
+];
+
+// Only the couple is offered the gallery. This is presentation: the route and
+// the photo bytes both re-check the session server-side, so adding the link
+// back in devtools leads to a 404 rather than to anyone's photographs.
+const COUPLE_NAV_LINKS = [
+  { href: '/gallery', label: 'Gallery' },
+  { href: '/qr', label: 'QR card' }
 ];
 
 export default function Header() {
   const solid = useSolidNav();
+  const role = useRole();
+  const navLinks = role === 'couple' ? [...NAV_LINKS, ...COUPLE_NAV_LINKS] : NAV_LINKS;
+
+  // Signs out on the single click, with no confirmation step: the couple reach
+  // for this while handing a borrowed phone back, and the cost of a misfire is
+  // re-entering a code, not losing anything.
+  const signOut = async () => {
+    await fetch('/api/leave', { method: 'POST' }).catch(() => {});
+    // Full navigation so the middleware re-runs against the cleared cookie.
+    window.location.assign('/');
+  };
   const [open, setOpen] = useState(false);
   const close = () => setOpen(false);
   const headerRef = useRef<HTMLElement>(null);
@@ -77,7 +96,7 @@ export default function Header() {
         </a>
 
         <nav data-desk style={css('align-items:center;gap:clamp(18px,2.4vw,34px)')}>
-          {NAV_LINKS.map((link) => (
+          {navLinks.map((link) => (
             <a
               key={link.href}
               href={link.href}
@@ -88,6 +107,17 @@ export default function Header() {
               {link.label}
             </a>
           ))}
+          {role === 'couple' && (
+            <button
+              type="button"
+              onClick={signOut}
+              style={css(
+                "appearance:none;background:none;border:0;padding:0;cursor:pointer;font:400 11px/1 'Jost',sans-serif;letter-spacing:.2em;text-transform:uppercase;color:inherit;opacity:.55;transition:opacity .3s ease"
+              )}
+            >
+              Sign out
+            </button>
+          )}
           <a
             href="#rsvp"
             data-cta
@@ -139,7 +169,7 @@ export default function Header() {
           alt="Aisha and Abdul — AlignedInLove"
           style={css('width:min(46vw,164px);height:auto;margin-bottom:4px')}
         />
-        {NAV_LINKS.map((link) => (
+        {navLinks.map((link) => (
           <a
             key={link.href}
             href={link.href}
@@ -149,6 +179,17 @@ export default function Header() {
             {link.label}
           </a>
         ))}
+        {role === 'couple' && (
+          <button
+            type="button"
+            onClick={signOut}
+            style={css(
+              "appearance:none;background:none;border:0;cursor:pointer;font:400 11px/1 'Jost',sans-serif;letter-spacing:.24em;text-transform:uppercase;color:rgba(250,247,241,.5)"
+            )}
+          >
+            Sign out
+          </button>
+        )}
         <a
           href="#rsvp"
           onClick={close}

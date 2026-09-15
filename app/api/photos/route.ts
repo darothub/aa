@@ -1,30 +1,20 @@
 import { NextResponse } from 'next/server';
 import { getCloudflareContext } from '@opennextjs/cloudflare';
 import { randomUUID } from 'crypto';
-import { insertPhoto, listPhotos } from '@/lib/db';
+import { insertPhoto } from '@/lib/db';
 import { detectImage } from '@/lib/image-type';
+import { hasRole } from '@/lib/session';
 
 const MAX_FILE_BYTES = 8 * 1024 * 1024;
 
-export async function GET() {
-  try {
-    const photos = await listPhotos();
-    return NextResponse.json({
-      photos: photos.map((p) => ({
-        id: p.id,
-        url: `/api/photos/${p.key}`,
-        uploaderName: p.uploaderName,
-        caption: p.caption,
-        createdAt: p.createdAt
-      }))
-    });
-  } catch (err) {
-    console.error('photo list failed', err);
-    return NextResponse.json({ error: 'Could not load photos right now.' }, { status: 500 });
-  }
-}
-
 export async function POST(request: Request) {
+  // Either passcode may upload — the guest code is the one printed beside the
+  // venue QR. This is also what stops the endpoint being an open file drop for
+  // anyone who happens to find the URL.
+  if (!(await hasRole('guest', 'couple'))) {
+    return NextResponse.json({ error: 'Please enter the passcode first.' }, { status: 401 });
+  }
+
   const form = await request.formData().catch(() => null);
   const file = form?.get('photo');
   const name = typeof form?.get('name') === 'string' ? String(form.get('name')).trim() : '';
@@ -66,5 +56,5 @@ export async function POST(request: Request) {
     );
   }
 
-  return NextResponse.json({ ok: true, url: `/api/photos/${key}` });
+  return NextResponse.json({ ok: true });
 }

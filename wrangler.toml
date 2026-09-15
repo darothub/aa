@@ -22,5 +22,11 @@ binding = "ASSETS"
 binding = "EVENT_PHOTOS"
 bucket_name = "aa-event-photos"
 
+# Passcodes and the signing key are secrets, set with `wrangler secret put`
+# rather than declared here — this file is committed. Listed for reference:
+#   GUEST_PASSCODE   the code printed beside the venue QR
+#   COUPLE_PASSCODE  private to the couple; additionally unlocks /gallery
+#   SESSION_SECRET   random string used to sign the session cookie
+
 [observability]
 enabled = true

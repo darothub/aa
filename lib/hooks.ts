@@ -80,36 +80,6 @@ export function useCountdown(iso: string): CountdownState {
   return state;
 }
 
-/**
- * True once `iso` has passed, following the same false-until-mount rule as
- * useCountdown above: the server and the first client render always agree on
- * `false`, and the effect flips it after hydration. Anything gated on this is
- * therefore absent from the static HTML and appears on the client, which is
- * what we want for the gallery QR — it should not ship in the prerendered
- * markup before the day.
- */
-export function useTimeReached(iso: string): boolean {
-  const [reached, setReached] = useState(false);
-
-  useEffect(() => {
-    const target = new Date(iso).getTime();
-    const delay = target - Date.now();
-    if (delay <= 0) {
-      setReached(true);
-      return;
-    }
-    // setTimeout stores its delay in a signed 32-bit int, so anything beyond
-    // ~24.8 days overflows and fires *immediately* — which would reveal the QR
-    // the moment the page loaded, the exact opposite of the intent. Months out,
-    // just leave it hidden; no tab stays open long enough for the timer to matter.
-    if (delay > 2147483647) return;
-    const id = setTimeout(() => setReached(true), delay);
-    return () => clearTimeout(id);
-  }, [iso]);
-
-  return reached;
-}
-
 export function countdownMessage(c: CountdownState): { message: string; subMessage: string } {
   if (c.past && c.sameDay) {
     return {
@@ -151,38 +121,6 @@ export function countdownMessage(c: CountdownState): { message: string; subMessa
     message: 'Tomorrow. Actually tomorrow.',
     subMessage: 'We have run out of ways to say it — so, see you there.'
   };
-}
-
-const SPLASH_SEEN_KEY = 'weddingSplashSeen';
-
-/**
- * Drives the first-visit splash overlay. Starts false so nothing renders
- * during SSR or the first client paint (the same "false-until-mount" pattern
- * used above for Hero.tsx's video flag and useCountdown's initial state) —
- * the mount effect then checks localStorage once: unseen, it shows the splash
- * and marks it seen; already seen, it stays hidden for good. Reduced-motion
- * visitors skip the splash outright, mirroring useRevealOnce's reduced-motion
- * branch below.
- */
-export function useFirstVisitSplash(durationMs = 2800): { visible: boolean; closing: boolean } {
-  const [visible, setVisible] = useState(false);
-  const [closing, setClosing] = useState(false);
-
-  useEffect(() => {
-    if (window.localStorage.getItem(SPLASH_SEEN_KEY)) return;
-    window.localStorage.setItem(SPLASH_SEEN_KEY, '1');
-    if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) return;
-
-    setVisible(true);
-    const closeTimer = setTimeout(() => setClosing(true), durationMs);
-    const hideTimer = setTimeout(() => setVisible(false), durationMs + 500);
-    return () => {
-      clearTimeout(closeTimer);
-      clearTimeout(hideTimer);
-    };
-  }, [durationMs]);
-
-  return { visible, closing };
 }
 
 /** Mirrors the original data-reveal / data-shown pattern: reveal once, on first intersection. */

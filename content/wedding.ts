@@ -176,21 +176,34 @@ export type StorySlide = {
  * link can add photos", and paste the share URL here. Left null, the
  * gallery page just omits that option.
  */
+/**
+ * The passcode screen every visitor lands on (`components/wedding/SplashGate.tsx`).
+ * The guest code goes on the invitation and beside the venue QR; the couple's
+ * is private and additionally unlocks the gallery. Both are Worker secrets
+ * (GUEST_PASSCODE / COUPLE_PASSCODE), never values in this file.
+ *
+ * Wording stays neutral about there being more than one code — a guest should
+ * never be told they are holding the lesser one.
+ */
+export const GATE = {
+  hint: 'Enter the code from your invitation to come in.',
+  label: 'Invitation code',
+  placeholder: 'Your code',
+  submit: 'Enter',
+  checking: 'Checking…',
+  error: "That code doesn't look right — check your invitation."
+};
+
 export const GALLERY = {
   heading: 'Photographs from the day',
-  subhead: 'Photos guests upload here appear for everyone to see, live.',
+  subhead: 'Everything guests have sent in from the day, in one place.',
   uploadNamePlaceholder: 'Your name',
   uploadCaptionPlaceholder: 'Add a caption (optional)',
   submitLabel: 'Upload photo',
   emptyState: 'No photos yet — be the first to add one.',
-  // The QR on the gallery page stays hidden in production until this moment,
-  // so it only appears when there is actually an event to photograph. Start of
-  // the wedding day in the venue's own offset, not the ceremony time — guests
-  // arrive and start taking photos well before 2pm.
-  qrLiveFrom: '2026-11-21T00:00:00+01:00',
   uploadHeading: 'Share your photos',
   uploadSubhead:
-    'Taken something you love? Add it here and it appears in the gallery for everyone, straight away.',
+    'Taken something you love? Send it straight to Aisha and Abdul.',
   viewGalleryLabel: 'See everyone’s photos',
   googlePhotosAlbumUrl: null as string | null,
   googlePhotosLabel: 'View the shared Google Photos album'

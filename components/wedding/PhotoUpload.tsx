@@ -6,7 +6,7 @@ import { GALLERY } from '@/content/wedding';
 
 type Result = { uploaded: number; failed: number };
 
-export default function PhotoUpload({ onUploaded }: { onUploaded?: () => void }) {
+export default function PhotoUpload() {
   const fileRef = useRef<HTMLInputElement>(null);
   const [name, setName] = useState('');
   const [caption, setCaption] = useState('');
@@ -72,7 +72,6 @@ export default function PhotoUpload({ onUploaded }: { onUploaded?: () => void })
       setCaption('');
       setFileNames([]);
       if (fileRef.current) fileRef.current.value = '';
-      onUploaded?.();
     }
     // Only surface the underlying message when nothing got through — on a
     // partial batch the summary below already says how many missed.

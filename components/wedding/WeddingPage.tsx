@@ -8,12 +8,10 @@ import Rsvp from './Rsvp';
 import GuestBook from './GuestBook';
 import InvitationTeaser from './InvitationTeaser';
 import Closing from './Closing';
-import SplashScreen from './SplashScreen';
 
 export default function WeddingPage() {
   return (
     <div style={{ position: 'relative', width: '100%' }}>
-      <SplashScreen />
       <Header />
       <Hero />
       <Countdown />
