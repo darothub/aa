@@ -128,7 +128,7 @@ export type DonationLink = { url: string; label: string };
  * once you have both links.
  */
 export const DONATION_LINKS: { foreign: DonationLink | null; ngn: DonationLink | null } = {
-  foreign: { url: 'https://donate.stripe.com/cNi5kF1LK7jubE58mW9IQ00', label: 'Support (€/£/$)' },
+  foreign: { url: 'https://donate.stripe.com/8x2fZj60RfNC5p8gWV4ko00', label: 'Support (€/£/$)' },
   ngn: { url: 'https://paystack.shop/pay/8596j15rdz', label: 'Support (₦)' }
 };
 
@@ -162,6 +162,38 @@ export type StorySlide = {
   placeholder: string;
   /** Vertical focal point for the cropped photo, as a CSS object-position Y value. Defaults to '50%' (centered) when omitted. */
   focalY?: string;
+};
+
+/**
+ * Copy and config for the live event gallery
+ * (`app/gallery/page.tsx`, `components/wedding/GalleryGrid.tsx`,
+ * `components/wedding/PhotoUpload.tsx`). Photos guests upload there go to
+ * R2 (the `EVENT_PHOTOS` binding in `wrangler.toml`) and are listed via
+ * `/api/photos`.
+ *
+ * `googlePhotosAlbumUrl` is a secondary, always-available place to post
+ * photos — create a shared Google Photos album, turn on "anyone with the
+ * link can add photos", and paste the share URL here. Left null, the
+ * gallery page just omits that option.
+ */
+export const GALLERY = {
+  heading: 'Photographs from the day',
+  subhead: 'Photos guests upload here appear for everyone to see, live.',
+  uploadNamePlaceholder: 'Your name',
+  uploadCaptionPlaceholder: 'Add a caption (optional)',
+  submitLabel: 'Upload photo',
+  emptyState: 'No photos yet — be the first to add one.',
+  // The QR on the gallery page stays hidden in production until this moment,
+  // so it only appears when there is actually an event to photograph. Start of
+  // the wedding day in the venue's own offset, not the ceremony time — guests
+  // arrive and start taking photos well before 2pm.
+  qrLiveFrom: '2026-11-21T00:00:00+01:00',
+  uploadHeading: 'Share your photos',
+  uploadSubhead:
+    'Taken something you love? Add it here and it appears in the gallery for everyone, straight away.',
+  viewGalleryLabel: 'See everyone’s photos',
+  googlePhotosAlbumUrl: null as string | null,
+  googlePhotosLabel: 'View the shared Google Photos album'
 };
 
 export const STORY_SLIDES: StorySlide[] = [

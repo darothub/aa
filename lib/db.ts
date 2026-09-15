@@ -9,6 +9,14 @@ export type GuestbookMessage = {
   createdAt: string;
 };
 
+export type EventPhoto = {
+  id: number;
+  key: string;
+  uploaderName: string;
+  caption: string | null;
+  createdAt: string;
+};
+
 // Resolved lazily so a missing DATABASE_URL fails the request that needs it
 // rather than the build: `next build` evaluates this module when collecting
 // page data, long before any environment secret is bound.
@@ -43,6 +51,30 @@ export async function listMessages(limit = 50): Promise<GuestbookMessage[]> {
     id: Number(row.id),
     name: String(row.name),
     message: String(row.message),
+    createdAt: String(row.created_at)
+  }));
+}
+
+export async function insertPhoto(key: string, uploaderName: string, caption: string): Promise<void> {
+  await sql()`
+    insert into event_photos (r2_key, uploader_name, caption)
+    values (${key}, ${uploaderName}, ${caption || null})
+  `;
+}
+
+export async function listPhotos(limit = 300): Promise<EventPhoto[]> {
+  const rows = await sql()`
+    select id, r2_key, uploader_name, caption, created_at
+    from event_photos
+    where approved
+    order by created_at desc
+    limit ${limit}
+  `;
+  return rows.map((row) => ({
+    id: Number(row.id),
+    key: String(row.r2_key),
+    uploaderName: String(row.uploader_name),
+    caption: row.caption ? String(row.caption) : null,
     createdAt: String(row.created_at)
   }));
 }

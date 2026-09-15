@@ -15,5 +15,12 @@ custom_domain = true
 directory = ".open-next/assets"
 binding = "ASSETS"
 
+# Holds guest-uploaded event photos. Objects are served back out through
+# /api/photos/[...key] (app/api/photos/[...key]/route.ts) rather than a public
+# bucket URL, since this bucket has no CDN domain of its own.
+[[r2_buckets]]
+binding = "EVENT_PHOTOS"
+bucket_name = "aa-event-photos"
+
 [observability]
 enabled = true

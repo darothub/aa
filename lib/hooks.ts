@@ -80,6 +80,36 @@ export function useCountdown(iso: string): CountdownState {
   return state;
 }
 
+/**
+ * True once `iso` has passed, following the same false-until-mount rule as
+ * useCountdown above: the server and the first client render always agree on
+ * `false`, and the effect flips it after hydration. Anything gated on this is
+ * therefore absent from the static HTML and appears on the client, which is
+ * what we want for the gallery QR — it should not ship in the prerendered
+ * markup before the day.
+ */
+export function useTimeReached(iso: string): boolean {
+  const [reached, setReached] = useState(false);
+
+  useEffect(() => {
+    const target = new Date(iso).getTime();
+    const delay = target - Date.now();
+    if (delay <= 0) {
+      setReached(true);
+      return;
+    }
+    // setTimeout stores its delay in a signed 32-bit int, so anything beyond
+    // ~24.8 days overflows and fires *immediately* — which would reveal the QR
+    // the moment the page loaded, the exact opposite of the intent. Months out,
+    // just leave it hidden; no tab stays open long enough for the timer to matter.
+    if (delay > 2147483647) return;
+    const id = setTimeout(() => setReached(true), delay);
+    return () => clearTimeout(id);
+  }, [iso]);
+
+  return reached;
+}
+
 export function countdownMessage(c: CountdownState): { message: string; subMessage: string } {
   if (c.past && c.sameDay) {
     return {
@@ -102,7 +132,7 @@ export function countdownMessage(c: CountdownState): { message: string; subMessa
   if (c.days > 30) {
     return {
       message: `${c.days} days until we make it official.`,
-      subMessage: 'No pressure — we only invited everyone we know.'
+      subMessage: 'Strictly by invitation'
     };
   }
   if (c.days > 7) {
