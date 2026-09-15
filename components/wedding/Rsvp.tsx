@@ -59,7 +59,7 @@ export default function Rsvp() {
     attending === 'yes' ? HASHTAG.invite : 'Follow it on the day and you will see the whole thing unfold.';
 
   return (
-    <section id="rsvp" style={css('scroll-margin-top:104px;padding:clamp(76px,12vw,150px) clamp(20px,5vw,72px);background:#1f1c18')}>
+    <section id="rsvp" style={css('scroll-margin-top:var(--header-h, 80px);padding:clamp(76px,12vw,150px) clamp(20px,5vw,72px);background:#1f1c18')}>
       <div
         style={css(
           'max-width:640px;margin:0 auto;display:flex;flex-direction:column;gap:clamp(28px,4vw,44px);text-align:center;align-items:center'

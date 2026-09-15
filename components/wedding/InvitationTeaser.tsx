@@ -33,7 +33,7 @@ export default function InvitationTeaser() {
   }, []);
 
   return (
-    <section id="invitation" style={css('scroll-margin-top:104px;padding:clamp(76px,12vw,150px) clamp(20px,5vw,72px);background:#efe8dd')}>
+    <section id="invitation" style={css('scroll-margin-top:var(--header-h, 80px);padding:clamp(76px,12vw,150px) clamp(20px,5vw,72px);background:#efe8dd')}>
       <div style={css('max-width:1160px;margin:0 auto;display:flex;flex-direction:column;gap:clamp(36px,5vw,60px)')}>
         <Reveal style={css('display:flex;flex-direction:column;gap:16px;max-width:42ch')}>
           <p style={css("margin:0;font:500 10px/1 'Jost',sans-serif;letter-spacing:.36em;text-transform:uppercase;color:#9a6f4c")}>

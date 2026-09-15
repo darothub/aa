@@ -36,13 +36,13 @@ export default function Countdown() {
   // that, both server and client render the same "counting down" label with
   // no digits and no message, so there's nothing for hydration to disagree on.
   const c = useCountdown(WEDDING_DATE.iso);
-  const { message, subMessage } = c ? countdownMessage(c) : { message: ' ', subMessage: ' ' };
+  const { message, subMessage } = c ? countdownMessage(c) : { message: ' ', subMessage: ' ' };
 
   return (
     <section
       id="countdown"
       style={css(
-        'scroll-margin-top:104px;position:relative;overflow:hidden;background:#1f1c18;padding:clamp(70px,11vw,130px) clamp(20px,5vw,72px)'
+        'scroll-margin-top:var(--header-h, 80px);position:relative;overflow:hidden;background:#1f1c18;padding:clamp(70px,11vw,130px) clamp(20px,5vw,72px)'
       )}
     >
       <div aria-hidden="true" style={css('position:absolute;inset:0;pointer-events:none;overflow:hidden')}>

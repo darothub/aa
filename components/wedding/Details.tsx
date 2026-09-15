@@ -51,7 +51,7 @@ export default function Details() {
   return (
     <section
       id="details"
-      style={css('scroll-margin-top:104px;padding:clamp(76px,12vw,150px) clamp(20px,5vw,72px);background:#efe8dd')}
+      style={css('scroll-margin-top:var(--header-h, 80px);padding:clamp(76px,12vw,150px) clamp(20px,5vw,72px);background:#efe8dd')}
     >
       <div style={css('max-width:1160px;margin:0 auto;display:flex;flex-direction:column;gap:clamp(40px,6vw,72px)')}>
         <Reveal style={css('display:flex;flex-direction:column;gap:16px;max-width:40ch')}>

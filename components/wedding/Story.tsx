@@ -67,7 +67,7 @@ export default function Story() {
   return (
     <section
       id="story"
-      style={css('scroll-margin-top:104px;padding:clamp(76px,12vw,150px) clamp(20px,5vw,72px);background:#f7f3ec')}
+      style={css('scroll-margin-top:var(--header-h, 80px);padding:clamp(76px,12vw,150px) clamp(20px,5vw,72px);background:#f7f3ec')}
     >
       <div style={css('max-width:1160px;margin:0 auto;display:flex;flex-direction:column;gap:clamp(38px,6vw,72px)')}>
         <Reveal style={css('display:flex;flex-direction:column;gap:18px;max-width:44ch')}>

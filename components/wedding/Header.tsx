@@ -1,6 +1,6 @@
 'use client';
 
-import { useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { useSolidNav } from '@/lib/hooks';
 import { css } from '@/lib/css';
 import { HASHTAG, LOGO, WEDDING_DATE } from '@/content/wedding';
@@ -10,18 +10,38 @@ const NAV_LINKS = [
   { href: '#story', label: 'Our story' },
   { href: '#details', label: 'Details' },
   { href: '#travel', label: 'Getting there' },
-  { href: '#invitation', label: 'Invitation' }
+  { href: '#invitation', label: 'Invitation' },
+  { href: '/gallery', label: 'Gallery' }
 ];
 
 export default function Header() {
   const solid = useSolidNav();
   const [open, setOpen] = useState(false);
   const close = () => setOpen(false);
+  const headerRef = useRef<HTMLElement>(null);
+
+  // The header's own height changes as it switches between its transparent
+  // (taller) and solid (shorter) states. Every anchor-linked section sets its
+  // scroll-margin-top from this measured value, so an in-page nav click lands
+  // exactly under the fixed header instead of leaving a gap that reveals the
+  // tail of the section above, or hiding the target under the header.
+  useEffect(() => {
+    const el = headerRef.current;
+    if (!el) return;
+    const setVar = () => {
+      document.documentElement.style.setProperty('--header-h', `${el.offsetHeight}px`);
+    };
+    setVar();
+    const ro = new ResizeObserver(setVar);
+    ro.observe(el);
+    return () => ro.disconnect();
+  }, []);
 
   return (
     <>
       <header
         data-nav
+        ref={headerRef}
         {...(solid ? { 'data-solid': '' } : {})}
         style={css(
           'position:fixed;top:0;left:0;right:0;z-index:60;display:flex;align-items:center;justify-content:space-between;gap:16px;transition:background .5s ease,padding .5s ease,box-shadow .5s ease,backdrop-filter .5s ease'

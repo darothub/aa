@@ -73,7 +73,7 @@ export default function GuestBook() {
   return (
     <section
       id="guestbook"
-      style={css('scroll-margin-top:104px;padding:clamp(76px,12vw,150px) clamp(20px,5vw,72px);background:#faf7f1')}
+      style={css('scroll-margin-top:var(--header-h, 80px);padding:clamp(76px,12vw,150px) clamp(20px,5vw,72px);background:#faf7f1')}
     >
       <div style={css('max-width:640px;margin:0 auto;display:flex;flex-direction:column;gap:clamp(28px,4vw,44px)')}>
         <Reveal style={css('display:flex;flex-direction:column;gap:16px;text-align:center;align-items:center')}>
