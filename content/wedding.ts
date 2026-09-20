@@ -57,6 +57,17 @@ export const TRAVEL_REFERENCE = {
 };
 
 /**
+ * Parking and shuttle facts shown in Travel.tsx, and the same facts the
+ * Travel-chat system prompt (`app/api/travel-chat/route.ts`) is built from —
+ * kept here as data, not inline JSX, so the API route can import them
+ * without also importing the component.
+ */
+export const TRAVEL_FAQ = {
+  parking: 'Complimentary valet and secure on-site parking from 12:45pm.',
+  shuttle: 'Coaches from Transcorp Hilton at 1:00pm, returning 10:30pm.'
+};
+
+/**
  * The gold interlocking-monogram lockup — "A A", a heart, and the hashtag
  * baked into the artwork itself. It ships on a solid near-black background,
  * so it only reads cleanly over dark surfaces. Placed full-size in the mobile
@@ -75,6 +86,21 @@ export const LOGO = {
 export const DRESS_CODE = {
   label: 'Formal / cocktail',
   note: 'Warm neutrals, deep greens and gold are very welcome.'
+};
+
+/**
+ * The wedding-page section ids the travel-chat assistant
+ * (`app/api/travel-chat/route.ts`) is allowed to point a guest back to, and
+ * the button label TravelChat.tsx shows for each. Kept here as the one
+ * source of truth so the client can also reject a model-emitted id that
+ * isn't a real section before rendering it as a clickable "jump to" button.
+ */
+export const PAGE_SECTIONS: Record<string, string> = {
+  details: 'Wedding details',
+  travel: 'Getting there',
+  rsvp: 'RSVP',
+  guestbook: 'Guestbook',
+  closing: 'Gifts'
 };
 
 /**
@@ -249,7 +275,7 @@ export const STORY_SLIDES: StorySlide[] = [
   {
     id: 'story-3',
     era: '2025 — Home coming',
-    title: 'Labe igi Orombo',
+    title: 'Safe Harbor',
     body: 'By 2025, we were no longer inexperienced sailors. We had learned the waters, understood our ship better, and most importantly, understood each other.\n' +
         '\n' +
         'The waves no longer frightened us. We knew that rough seas would come and go, but we also knew how to navigate them together. This was the year we steadied the ship more experienced, more confident, and much less afraid of whatever the ocean might bring.',
