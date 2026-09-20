@@ -13,6 +13,7 @@
     "cf:typegen": "wrangler types --env-interface CloudflareEnv cloudflare-env.d.ts --include-runtime=false"
   },
   "dependencies": {
+    "@anthropic-ai/sdk": "^0.32.1",
     "@neondatabase/serverless": "^0.10.4",
     "leaflet": "^1.9.4",
     "next": "^15.5.24",

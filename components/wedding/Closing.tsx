@@ -40,6 +40,7 @@ export default function Closing() {
 
   return (
     <section
+      id="closing"
       ref={wrapRef}
       style={css('position:relative;min-height:82svh;display:flex;align-items:flex-end;overflow:hidden')}
     >

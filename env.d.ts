@@ -11,4 +11,5 @@ interface CloudflareEnv {
   GUEST_PASSCODE?: string;
   COUPLE_PASSCODE?: string;
   SESSION_SECRET?: string;
+  ANTHROPIC_API_KEY?: string;
 }

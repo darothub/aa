@@ -8,6 +8,7 @@ import Rsvp from './Rsvp';
 import GuestBook from './GuestBook';
 import InvitationTeaser from './InvitationTeaser';
 import Closing from './Closing';
+import TravelChat from './TravelChat';
 
 export default function WeddingPage() {
   return (
@@ -22,6 +23,10 @@ export default function WeddingPage() {
       <Rsvp />
       <GuestBook />
       <Closing />
+      {/* Rendered once here, not inside Travel, so its fixed trigger icon
+          and right-docked panel stay available while scrolling through
+          every section of the page, not just Getting There. */}
+      <TravelChat />
     </div>
   );
 }

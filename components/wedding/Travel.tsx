@@ -188,25 +188,6 @@ export default function Travel() {
                 Apple Maps
               </a>
             </div>
-
-            <div style={css('display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,180px),1fr));gap:20px;padding-top:8px')}>
-              <div style={css('display:flex;flex-direction:column;gap:6px')}>
-                <span style={css("font:500 10px/1 'Jost',sans-serif;letter-spacing:.26em;text-transform:uppercase;color:#9a6f4c")}>
-                  Parking
-                </span>
-                <span style={css("font:300 14px/1.7 'Jost',sans-serif;color:#3a352e")}>
-                  Complimentary valet and secure on-site parking from 12:45pm.
-                </span>
-              </div>
-              <div style={css('display:flex;flex-direction:column;gap:6px')}>
-                <span style={css("font:500 10px/1 'Jost',sans-serif;letter-spacing:.26em;text-transform:uppercase;color:#9a6f4c")}>
-                  Shuttle
-                </span>
-                <span style={css("font:300 14px/1.7 'Jost',sans-serif;color:#3a352e")}>
-                  Coaches from Transcorp Hilton at 1:00pm, returning 10:30pm.
-                </span>
-              </div>
-            </div>
           </Reveal>
 
           <Reveal>
