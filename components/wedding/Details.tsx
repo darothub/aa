@@ -2,7 +2,15 @@ import type { ReactNode } from 'react';
 import { css } from '@/lib/css';
 import Reveal from '@/components/Reveal';
 import Hashtag from './Hashtag';
-import { COUPLE, DRESS_CODE, HASHTAG, VENUE, WEDDING_DATE } from '@/content/wedding';
+import {
+  CEREMONY_READY,
+  COUPLE,
+  DRESS_CODE,
+  DRESS_CODE_READY,
+  HASHTAG,
+  VENUE,
+  WEDDING_DATE
+} from '@/content/wedding';
 
 // Flip these to true once the real schedule and guest-info copy are ready to publish.
 const TIMELINE_READY = false;
@@ -45,7 +53,9 @@ const GUEST_INFO: Array<{ label: string; body: ReactNode }> = [
   { label: 'Dietary requirements', body: 'Halal throughout, with vegetarian and gluten-free menus. Tell us when you reply.' }
 ];
 
-const comingSoonStyle = css("font:300 14.5px/1.7 'Jost',sans-serif;color:#6b6259;font-style:italic");
+const comingSoonStyle = css(
+  "font:300 14.5px/1.7 'Jost',sans-serif;font-style:italic;background-image:linear-gradient(90deg,#6b6259 0%,#6b6259 42%,#c9a978 50%,#6b6259 58%,#6b6259 100%);background-size:260% 100%;-webkit-background-clip:text;background-clip:text;color:transparent;-webkit-text-fill-color:transparent;animation:detailsShimmer 3.4s linear infinite"
+);
 
 export default function Details() {
   return (
@@ -53,6 +63,12 @@ export default function Details() {
       id="details"
       style={css('scroll-margin-top:var(--header-h, 80px);padding:clamp(76px,12vw,150px) clamp(20px,5vw,72px);background:#efe8dd')}
     >
+      <style>{`
+        @keyframes detailsShimmer {
+          0% { background-position: 200% 0; }
+          100% { background-position: -100% 0; }
+        }
+      `}</style>
       <div style={css('max-width:1160px;margin:0 auto;display:flex;flex-direction:column;gap:clamp(40px,6vw,72px)')}>
         <Reveal style={css('display:flex;flex-direction:column;gap:16px;max-width:40ch')}>
           <p style={css("margin:0;font:500 10px/1 'Jost',sans-serif;letter-spacing:.36em;text-transform:uppercase;color:#9a6f4c")}>
@@ -65,15 +81,17 @@ export default function Details() {
 
         <div style={css('display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,260px),1fr));gap:1px;background:rgba(31,28,24,.14)')}>
           {[
-            { label: 'Date', big: <>{WEDDING_DATE.weekday}<br />{WEDDING_DATE.day} {WEDDING_DATE.month} {WEDDING_DATE.year}</> },
-            { label: 'Ceremony', big: <>{WEDDING_DATE.ceremonyTime}<br />doors from {WEDDING_DATE.doorsTime}</> },
+            { label: 'Date', ready: true, big: <>{WEDDING_DATE.weekday}<br />{WEDDING_DATE.day} {WEDDING_DATE.month} {WEDDING_DATE.year}</> },
+            { label: 'Ceremony', ready: CEREMONY_READY, big: <>{WEDDING_DATE.ceremonyTime}<br />doors from {WEDDING_DATE.doorsTime}</> },
             {
               label: 'Venue',
+              ready: true,
               big: <>{VENUE.name}</>,
               small: VENUE.shortAddress + ', Nigeria'
             },
             {
               label: 'Dress code',
+              ready: DRESS_CODE_READY,
               big: <>{DRESS_CODE.label}</>,
               small: DRESS_CODE.note
             }
@@ -82,9 +100,17 @@ export default function Details() {
               <span style={css("font:500 9.5px/1 'Jost',sans-serif;letter-spacing:.28em;text-transform:uppercase;color:#9a6f4c")}>
                 {card.label}
               </span>
-              <span style={css("font:300 clamp(24px,3vw,32px)/1.2 'Cormorant Garamond',serif")}>{card.big}</span>
-              {card.small && (
-                <span style={css("font:300 14px/1.7 'Jost',sans-serif;color:#6b6259")}>{card.small}</span>
+              {card.ready ? (
+                <>
+                  <span style={css("font:300 clamp(24px,3vw,32px)/1.2 'Cormorant Garamond',serif")}>{card.big}</span>
+                  {card.small && (
+                    <span style={css("font:300 14px/1.7 'Jost',sans-serif;color:#6b6259")}>{card.small}</span>
+                  )}
+                </>
+              ) : (
+                <span style={{ ...comingSoonStyle, font: "300 clamp(22px,2.8vw,28px)/1.2 'Cormorant Garamond',serif" }}>
+                  Coming soon
+                </span>
               )}
             </Reveal>
           ))}

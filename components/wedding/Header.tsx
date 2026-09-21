@@ -12,6 +12,7 @@ const NAV_LINKS = [
   { href: '#details', label: 'Details' },
   { href: '#travel', label: 'Getting there' },
   { href: '#invitation', label: 'Invitation' },
+  { href: '#guestbook', label: 'Guest book' },
   { href: '/upload', label: 'Add photos' }
 ];
 

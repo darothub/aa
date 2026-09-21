@@ -78,3 +78,19 @@ export async function listPhotos(limit = 300): Promise<EventPhoto[]> {
     createdAt: String(row.created_at)
   }));
 }
+
+/**
+ * Returns the R2 keys for the given photo ids and deletes their rows, in one
+ * statement — the caller needs the keys back to remove the matching objects
+ * from R2, and doing that lookup separately would leave a window where the
+ * row is gone but the key was never learned.
+ */
+export async function deletePhotos(ids: number[]): Promise<string[]> {
+  if (ids.length === 0) return [];
+  const rows = await sql()`
+    delete from event_photos
+    where id = any(${ids})
+    returning r2_key
+  `;
+  return rows.map((row) => String(row.r2_key));
+}

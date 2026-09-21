@@ -10,28 +10,9 @@ export default function Story() {
   const viewportRef = useRef<HTMLDivElement>(null);
   const trackRef = useRef<HTMLDivElement>(null);
   const [index, setIndex] = useState(0);
-  const pausedRef = useRef(false);
-  const resumeTimer = useRef<ReturnType<typeof setTimeout>>();
   const dragState = useRef<{ x0: number; dx: number } | null>(null);
 
   const go = (i: number) => setIndex(((i % STORY_SLIDES.length) + STORY_SLIDES.length) % STORY_SLIDES.length);
-
-  const nudge = () => {
-    pausedRef.current = true;
-    clearTimeout(resumeTimer.current);
-    resumeTimer.current = setTimeout(() => {
-      pausedRef.current = false;
-    }, 14000);
-  };
-
-  useEffect(() => {
-    if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) return;
-    const id = setInterval(() => {
-      if (!pausedRef.current && !document.hidden) go(index + 1);
-    }, 9500);
-    return () => clearInterval(id);
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [index]);
 
   useEffect(() => {
     if (trackRef.current) trackRef.current.style.transform = `translate3d(${-index * 100}%,0,0)`;
@@ -40,7 +21,6 @@ export default function Story() {
   const onPointerDown = (e: ReactPointerEvent) => {
     dragState.current = { x0: e.clientX, dx: 0 };
     trackRef.current?.setAttribute('data-dragging', '');
-    nudge();
   };
   const onPointerMove = (e: ReactPointerEvent) => {
     const drag = dragState.current;
@@ -93,8 +73,6 @@ export default function Story() {
             onPointerUp={endDrag}
             onPointerCancel={endDrag}
             onPointerLeave={endDrag}
-            onMouseEnter={() => (pausedRef.current = true)}
-            onMouseLeave={() => (pausedRef.current = false)}
           >
             <div data-story-track ref={trackRef}>
               {STORY_SLIDES.map((slide) => (
@@ -143,10 +121,7 @@ export default function Story() {
                   type="button"
                   data-dot
                   {...(i === index ? { 'data-selected': '' } : {})}
-                  onClick={() => {
-                    nudge();
-                    go(i);
-                  }}
+                  onClick={() => go(i)}
                   aria-label={`Go to chapter ${i + 1}`}
                   style={css(
                     'appearance:none;cursor:pointer;border:0;padding:0;width:14px;height:4px;border-radius:2px;background:rgba(31,28,24,.24);transition:width .4s ease,background .4s ease'
@@ -160,10 +135,7 @@ export default function Story() {
               </span>
               <button
                 type="button"
-                onClick={() => {
-                  nudge();
-                  go(index - 1);
-                }}
+                onClick={() => go(index - 1)}
                 aria-label="Previous chapter"
                 style={css(
                   "appearance:none;cursor:pointer;width:46px;height:46px;border:1px solid rgba(31,28,24,.24);background:none;color:#1f1c18;font:300 17px/1 'Jost',sans-serif;border-radius:50%;transition:border-color .35s ease,background .35s ease"
@@ -173,10 +145,7 @@ export default function Story() {
               </button>
               <button
                 type="button"
-                onClick={() => {
-                  nudge();
-                  go(index + 1);
-                }}
+                onClick={() => go(index + 1)}
                 aria-label="Next chapter"
                 style={css(
                   "appearance:none;cursor:pointer;width:46px;height:46px;border:1px solid rgba(31,28,24,.24);background:none;color:#1f1c18;font:300 17px/1 'Jost',sans-serif;border-radius:50%;transition:border-color .35s ease,background .35s ease"

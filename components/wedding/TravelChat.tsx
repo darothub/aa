@@ -2,7 +2,6 @@
 
 import { useRef, useState } from 'react';
 import { css } from '@/lib/css';
-import { COUPLE, LOGO } from '@/content/wedding';
 
 type Msg = { role: 'user' | 'assistant'; text: string };
 
@@ -83,8 +82,8 @@ function renderMessageBody(text: string, isUser: boolean, goToSection: (id: stri
 }
 
 /**
- * Renders as a fixed circular icon docked to the bottom-right corner of the
- * viewport (the wedding logo mark), with a dismissible label bubble and a
+ * Renders as a fixed rounded-square icon docked to the bottom-right corner of
+ * the viewport (the wedding logo mark), with a dismissible label bubble and a
  * pulsing ring to draw a first-time guest's attention to what it does.
  * Opens a panel that slides in from the right edge and stays pinned there —
  * rather than a centered modal — so guests can keep the page behind it in
@@ -106,6 +105,11 @@ export default function TravelChat() {
     setShowLabel(false);
   };
 
+  const closeChat = () => {
+    setOpen(false);
+    setShowLabel(true);
+  };
+
   const scrollToEnd = () => {
     requestAnimationFrame(() => {
       listRef.current?.scrollTo({ top: listRef.current.scrollHeight, behavior: 'smooth' });
@@ -115,7 +119,7 @@ export default function TravelChat() {
   /** Closes the panel and scrolls the page to the section the answer just
    * referenced, so the guest lands on the real content instead of a link. */
   const goToSection = (id: string) => {
-    setOpen(false);
+    closeChat();
     requestAnimationFrame(() => {
       document.getElementById(id)?.scrollIntoView({ behavior: 'smooth', block: 'start' });
     });
@@ -171,7 +175,7 @@ export default function TravelChat() {
       {!open && (
         <div
           style={css(
-            'position:fixed;bottom:clamp(86px,13vw,102px);right:clamp(12px,2.4vw,26px);z-index:900;display:flex;align-items:center;gap:8px'
+            'position:fixed;bottom:clamp(18px,3vw,28px);right:clamp(14px,2.4vw,28px);z-index:900;display:flex;flex-direction:column;align-items:flex-end;gap:10px'
           )}
         >
           {showLabel && (
@@ -194,29 +198,28 @@ export default function TravelChat() {
               </button>
             </div>
           )}
+
+          <button
+            type="button"
+            onClick={openChat}
+            aria-label="Ask the wedding assistant"
+            title="Ask the wedding assistant"
+            style={css(
+              `width:48px;height:48px;border-radius:14px;border:none;display:flex;align-items:center;justify-content:center;overflow:hidden;cursor:pointer;padding:0;flex-shrink:0;transition:transform .3s ease;animation:travelChatPulse 2.6s ease-out ${
+                open ? '0s 1' : 'infinite'
+              };box-shadow:0 0 0 1px rgba(154,111,76,.5),0 6px 16px -8px rgba(31,28,24,.45);background:#1f1c18`
+            )}
+          >
+            <span style={css('font-size:22px;line-height:1')}>💬</span>
+          </button>
         </div>
       )}
-
-      <button
-        type="button"
-        onClick={openChat}
-        aria-label="Ask the wedding assistant"
-        title="Ask the wedding assistant"
-        style={css(
-          `position:fixed;bottom:clamp(18px,3vw,28px);right:clamp(14px,2.4vw,28px);z-index:900;width:60px;height:60px;border-radius:50%;border:1px solid rgba(31,28,24,.14);background:#1f1c18;display:flex;align-items:center;justify-content:center;overflow:hidden;cursor:pointer;padding:0;transition:transform .3s ease;animation:travelChatPulse 2.6s ease-out ${
-            open ? '0s 1' : 'infinite'
-          }`
-        )}
-      >
-        {/* eslint-disable-next-line @next/next/no-img-element */}
-        <img src={LOGO.src} alt="" style={css('width:78%;height:78%;object-fit:contain')} />
-      </button>
 
       {open && (
         <div
           style={css('position:fixed;inset:0;z-index:1000;background:rgba(31,28,24,.42)')}
           onClick={(e) => {
-            if (e.target === e.currentTarget) setOpen(false);
+            if (e.target === e.currentTarget) closeChat();
           }}
         >
           <div
@@ -242,7 +245,7 @@ export default function TravelChat() {
               </div>
               <button
                 type="button"
-                onClick={() => setOpen(false)}
+                onClick={closeChat}
                 aria-label="Close"
                 style={css(
                   "appearance:none;cursor:pointer;border:none;background:none;color:#6b6259;font:300 22px/1 'Jost',sans-serif;padding:4px 8px"

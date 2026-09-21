@@ -1,7 +1,17 @@
 import { NextResponse } from 'next/server';
 import { getCloudflareContext } from '@opennextjs/cloudflare';
 import Anthropic from '@anthropic-ai/sdk';
-import { COUPLE, DRESS_CODE, HASHTAG, HAS_DONATION_LINK, TRAVEL_REFERENCE, VENUE, WEDDING_DATE } from '@/content/wedding';
+import {
+  CEREMONY_READY,
+  COUPLE,
+  DRESS_CODE,
+  DRESS_CODE_READY,
+  HASHTAG,
+  HAS_DONATION_LINK,
+  TRAVEL_REFERENCE,
+  VENUE,
+  WEDDING_DATE
+} from '@/content/wedding';
 
 const MAX_MESSAGE_LENGTH = 300;
 const MAX_HISTORY = 8;
@@ -14,10 +24,18 @@ type ChatMsg = { role: 'user' | 'assistant'; text: string };
  * ones, with no chance of the two drifting apart. */
 const DESTINATION_QUERY = VENUE.googleMapsUrl.split('destination=')[1];
 
+const NOT_CONFIRMED = 'not yet confirmed — coming soon';
+
 /**
  * Interpolates only the structured travel facts already shown on the page —
  * no guest input goes into the prompt except their question, so the model
  * has nothing to work with beyond what a guest could already read here.
+ *
+ * Ceremony time and dress code are gated behind the same CEREMONY_READY /
+ * DRESS_CODE_READY flags that make Details.tsx show "Coming soon" instead of
+ * a real value — imported from `content/wedding.ts` so the assistant can
+ * never state an unconfirmed detail as settled fact while the page itself
+ * still calls it unconfirmed.
  */
 function buildSystemPrompt(isFirstTurn: boolean): string {
   return [
@@ -30,16 +48,19 @@ function buildSystemPrompt(isFirstTurn: boolean): string {
         "'s big day. Ask me anything!\" Then answer their question."
       : "This is a continuing conversation — do not reintroduce yourself, just answer the question.",
     'Answer ONLY using the facts listed below. Keep answers to 2-3 short sentences.',
-    "If a question asks for anything not covered by these facts (cost, timing changes, dietary needs, RSVP submission, anything else), say you don't have that detail and suggest the guest contact the couple directly. Never guess or invent an address, time, price, or instruction.",
+    `Some facts are marked "${NOT_CONFIRMED}". If a guest asks about one of those, say warmly that it hasn't been confirmed yet and will be shared closer to the day — do not invent or guess a value for it, and do not treat it as if it were already decided.`,
+    "If a question asks for anything not covered by these facts at all (cost, dietary needs, RSVP submission, anything else), say you don't have that detail and suggest the guest contact the couple directly. Never guess or invent an address, time, price, or instruction.",
     '',
     'FACTS:',
     `- Venue: ${VENUE.name}, ${VENUE.fullAddress}`,
     `- Neighbourhood: ${VENUE.district}, ${VENUE.city}`,
-    `- Doors open: ${WEDDING_DATE.doorsTime}; ceremony begins: ${WEDDING_DATE.ceremonyTime}`,
+    CEREMONY_READY
+      ? `- Doors open: ${WEDDING_DATE.doorsTime}; ceremony begins: ${WEDDING_DATE.ceremonyTime}`
+      : `- Doors/ceremony time: ${NOT_CONFIRMED}`,
     `- RSVP deadline: ${WEDDING_DATE.rsvpDeadline}`,
-    `- Dress code: ${DRESS_CODE.label} — ${DRESS_CODE.note}`,
+    DRESS_CODE_READY ? `- Dress code: ${DRESS_CODE.label} — ${DRESS_CODE.note}` : `- Dress code: ${NOT_CONFIRMED}`,
     `- Gifts: ${HAS_DONATION_LINK ? 'a gift/registry link is shared with guests separately (in the invitation or on this page) — say to look there rather than reading out a URL' : 'the registry link is in the invitation email'}`,
-    `- Sharing photos: guests can post to the event gallery on this website, and are encouraged to tag posts with ${HASHTAG.tag}`,
+    `- Sharing photos: guests can upload photos using the form at this website, and are encouraged to tag posts with ${HASHTAG.tag}`,
     `- Distance from ${TRAVEL_REFERENCE.cityCentre.label}: about ${TRAVEL_REFERENCE.cityCentre.minutes} minutes`,
     `- Distance from ${TRAVEL_REFERENCE.airport.label}: about ${TRAVEL_REFERENCE.airport.minutes} minutes`,
     `- Google Maps directions to the venue: ${VENUE.googleMapsUrl}`,
@@ -62,7 +83,7 @@ function buildSystemPrompt(isFirstTurn: boolean): string {
     '- Gifts / registry: #closing',
     '- Guest book messages: #guestbook',
     '- Countdown / the date: #countdown',
-    "- Sharing photos: this lives on a separate page, so use [[link:View the gallery|/gallery]] instead of a #section-id.",
+    "- Sharing photos: use [[link:Upload a photo|/upload]] to direct guests to the upload form.",
     'Add at most one such token per reply, only when it is directly relevant, and never invent a section id not listed here.'
   ].join('\n');
 }
@@ -90,6 +111,22 @@ export async function POST(request: Request) {
   }
 
   const { env } = getCloudflareContext();
+
+  // One IP can only send a handful of messages a minute — keeps a script (or
+  // a guest mashing send) from running up the Anthropic bill. Falls open
+  // rather than closed if the binding or the IP header is missing, since
+  // neither should ever block a genuine guest from asking a question.
+  const clientIp = request.headers.get('cf-connecting-ip');
+  if (env.TRAVEL_CHAT_RATE_LIMITER && clientIp) {
+    const { success } = await env.TRAVEL_CHAT_RATE_LIMITER.limit({ key: clientIp });
+    if (!success) {
+      return NextResponse.json(
+        { error: "That's a lot of questions at once — give it a minute and try again." },
+        { status: 429 }
+      );
+    }
+  }
+
   const apiKey = env.ANTHROPIC_API_KEY;
   if (!apiKey) {
     console.error('ANTHROPIC_API_KEY is not set');

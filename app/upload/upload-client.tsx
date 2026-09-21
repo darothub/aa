@@ -1,6 +1,5 @@
 'use client';
 
-import Link from 'next/link';
 import { css } from '@/lib/css';
 import Header from '@/components/wedding/Header';
 import PhotoUpload from '@/components/wedding/PhotoUpload';
@@ -8,9 +7,9 @@ import { COUPLE, GALLERY } from '@/content/wedding';
 
 /**
  * The page the gallery QR code points at. Deliberately just the form: a guest
- * scanning at the venue is standing up, on a phone, one-handed — the grid of
- * everyone else's photos lives at /gallery and is a link away rather than
- * something to scroll past before reaching the upload button.
+ * scanning at the venue is standing up, on a phone, one-handed. The gallery
+ * itself is couple-only, so there is nothing here for a guest to view after
+ * uploading.
  */
 export default function UploadClient() {
   return (
@@ -35,15 +34,6 @@ export default function UploadClient() {
         </div>
 
         <PhotoUpload />
-
-        <Link
-          href="/gallery"
-          style={css(
-            "align-self:flex-start;font:400 13px/1.6 'Jost',sans-serif;letter-spacing:.04em;color:#9a6f4c;text-decoration:underline;text-underline-offset:4px"
-          )}
-        >
-          {GALLERY.viewGalleryLabel} →
-        </Link>
       </main>
     </div>
   );

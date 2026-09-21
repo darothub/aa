@@ -89,6 +89,17 @@ export const DRESS_CODE = {
 };
 
 /**
+ * Date and Venue are locked in; Ceremony time and Dress code aren't confirmed
+ * yet. Read by both Details.tsx (to show "Coming soon" instead of the real
+ * value) and the travel-chat system prompt (`app/api/travel-chat/route.ts`,
+ * to say the same thing instead of stating the unconfirmed value as fact) —
+ * kept here as the one source of truth so the two can't drift apart. Flip to
+ * true once the real value is confirmed and ready to publish.
+ */
+export const CEREMONY_READY = false;
+export const DRESS_CODE_READY = false;
+
+/**
  * The wedding-page section ids the travel-chat assistant
  * (`app/api/travel-chat/route.ts`) is allowed to point a guest back to, and
  * the button label TravelChat.tsx shows for each. Kept here as the one
@@ -100,7 +111,8 @@ export const PAGE_SECTIONS: Record<string, string> = {
   travel: 'Getting there',
   rsvp: 'RSVP',
   guestbook: 'Guestbook',
-  closing: 'Gifts'
+  closing: 'Gifts',
+  'bridal-train': 'Meet the bridal train'
 };
 
 /**
@@ -230,10 +242,31 @@ export const GALLERY = {
   uploadHeading: 'Share your photos',
   uploadSubhead:
     'Taken something you love? Send it straight to Aisha and Abdul.',
-  viewGalleryLabel: 'See everyone’s photos',
   googlePhotosAlbumUrl: null as string | null,
   googlePhotosLabel: 'View the shared Google Photos album'
 };
+
+export type BridalTrainMember = {
+  id: string;
+  name: string;
+  role: string;
+  side: 'bride' | 'groom';
+  /** Path under /public/images, once a real photo exists. */
+  photo?: string;
+};
+
+/**
+ * Copy and roster for the "Meet the bridal train" section
+ * (`components/wedding/BridalTrain.tsx`). Left empty until real names and
+ * photos are confirmed — the section then renders a placeholder grid instead
+ * of guessing at members, the same pattern Details.tsx uses for unconfirmed
+ * facts and GalleryGrid.tsx uses before any photo has been uploaded. Add
+ * entries here once the roster is final and the section switches over
+ * automatically.
+ */
+export const BRIDAL_TRAIN_READY = false;
+
+export const BRIDAL_TRAIN: BridalTrainMember[] = [];
 
 export const STORY_SLIDES: StorySlide[] = [
   {

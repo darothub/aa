@@ -2,6 +2,7 @@ import Header from './Header';
 import Hero from './Hero';
 import Countdown from './Countdown';
 import Story from './Story';
+import BridalTrain from './BridalTrain';
 import Details from './Details';
 import Travel from './Travel';
 import Rsvp from './Rsvp';
@@ -17,6 +18,7 @@ export default function WeddingPage() {
       <Hero />
       <Countdown />
       <Story />
+      <BridalTrain />
       <Details />
       <Travel />
       <InvitationTeaser />
