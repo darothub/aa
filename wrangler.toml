@@ -29,5 +29,16 @@ bucket_name = "aa-event-photos"
 #   SESSION_SECRET     random string used to sign the session cookie
 #   ANTHROPIC_API_KEY  Claude API key used by /api/travel-chat
 
+# Caps how often one visitor can call the Claude-backed /api/travel-chat route,
+# so a script (or a guest mashing send) can't run up the Anthropic bill.
+# namespace_id is an arbitrary label Cloudflare uses to key this limiter, not
+# a resource that needs creating first.
+[[ratelimits]]
+# `name`, not `binding` — wrangler rejects `binding` here, unlike every
+# other binding block in this file.
+name = "TRAVEL_CHAT_RATE_LIMITER"
+namespace_id = "1001"
+simple = { limit = 8, period = 60 }
+
 [observability]
 enabled = true
