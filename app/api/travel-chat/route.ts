@@ -115,9 +115,28 @@ export async function POST(request: Request) {
   // One IP can only send a handful of messages a minute — keeps a script (or
   // a guest mashing send) from running up the Anthropic bill. Falls open
   // rather than closed if the binding or the IP header is missing, since
-  // neither should ever block a genuine guest from asking a question.
-  const clientIp = request.headers.get('cf-connecting-ip');
-  if (env.TRAVEL_CHAT_RATE_LIMITER && clientIp) {
+  // neither should ever block a genuine guest from asking a question — but it
+  // says so in the logs, because a limiter that quietly never fires looks
+  // exactly like a limiter that works until the bill arrives.
+  const clientIp =
+    request.headers.get('cf-connecting-ip') ??
+    request.headers.get('x-real-ip') ??
+    request.headers.get('x-forwarded-for')?.split(',')[0]?.trim() ??
+    null;
+
+  if (!env.TRAVEL_CHAT_RATE_LIMITER) {
+    console.warn('travel-chat: rate limiter binding absent, allowing request');
+  } else if (!clientIp) {
+    console.warn(
+      `travel-chat: no client IP header, allowing request; saw [${[...request.headers.keys()].join(', ')}]`
+    );
+  } else {
+    // Verified in production: this branch is reached (no warning is logged) and
+    // limit() is called, but a burst of 12-15 simultaneous requests all came
+    // back success=true against a limit of 8/60s. Cloudflare's limiter is
+    // best-effort with per-location, eventually-consistent counters — it throttles
+    // a sustained loop as the counters converge, and does not stop a short burst.
+    // Treat it as a brake on runaway usage, not as a hard cap.
     const { success } = await env.TRAVEL_CHAT_RATE_LIMITER.limit({ key: clientIp });
     if (!success) {
       return NextResponse.json(
