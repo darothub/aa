@@ -2,11 +2,11 @@ import Header from './Header';
 import Hero from './Hero';
 import Countdown from './Countdown';
 import Story from './Story';
-import BridalTrain from './BridalTrain';
 import Details from './Details';
 import Travel from './Travel';
 import Rsvp from './Rsvp';
 import GuestBook from './GuestBook';
+import BridalTrain from './BridalTrain';
 import InvitationTeaser from './InvitationTeaser';
 import Closing from './Closing';
 import TravelChat from './TravelChat';
@@ -18,12 +18,12 @@ export default function WeddingPage() {
       <Hero />
       <Countdown />
       <Story />
-      <BridalTrain />
       <Details />
       <Travel />
       <InvitationTeaser />
       <Rsvp />
       <GuestBook />
+      <BridalTrain />
       <Closing />
       {/* Rendered once here, not inside Travel, so its fixed trigger icon
           and right-docked panel stay available while scrolling through
