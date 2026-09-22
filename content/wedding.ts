@@ -317,7 +317,7 @@ export const STORY_SLIDES: StorySlide[] = [
   {
     id: 'story-4',
     era: '2026 — The question',
-    title: 'Asked badly, answered immediately',
+    title: 'From one important question to forever',
     body: 'And now, we sail further.\n' +
         '\n' +
         'We have reached a place where we understand that love is not always about perfect weather or endless smooth sailing. Sometimes we are offshore, discovering new waters together; sometimes we return to shore to rest, reflect, and find our footing.\n' +
